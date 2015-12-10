@@ -1,0 +1,39 @@
+<!DOCTYPE weblogic-web-app
+  PUBLIC "-//BEA Systems, Inc.//DTD Web Application 8.1//EN"
+  "http://www.bea.com/servers/wls810/dtd/weblogic810-web-jar.dtd">
+
+<weblogic-web-app>
+
+  <session-descriptor>
+    <session-param>
+      <param-name>InvalidationIntervalSecs</param-name>
+      <param-value>60</param-value>
+    </session-param>
+    <session-param>
+      <param-name>TimeoutSecs</param-name>
+      <param-value>600</param-value>
+    </session-param>
+    <session-param>
+      <param-name>PersistentStoreType</param-name>
+      <param-value>replicated_if_clustered</param-value>
+    </session-param>    
+  </session-descriptor>
+
+    <!-- This handles the case where several webapp's all share common images
+         There are several ways to solve this.  1) create a webapp with context-root of /images
+         and all common images live here.  2) use virtual-directory-mapping to map the common
+         local path for the images URI.
+         This can be mapped to any local directory path, I left it pointing in the src tree
+         for ease of development so we don't have to copy images around.  At 
+         "produciton installation" this would be replaced with a different path, more than
+         likely a NFS mounted volume.  Substituting this variable currently can only be done
+         currently at build time.  This is a problem we are seeking to address in the release
+         post 8.1. -->
+  <virtual-directory-mapping>
+    <local-path>c:/bea/weblogic81/samples/server/medrec/src/common/web</local-path>
+      <url-pattern>images/*</url-pattern>
+  </virtual-directory-mapping>
+
+  <context-root>patient</context-root>
+
+</weblogic-web-app>

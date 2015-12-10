@@ -1,0 +1,133 @@
+<project name="physician ear" default="build">
+
+  <property environment="env" />
+
+  <property file="../medrec.properties"/>
+
+  <property name="build.compiler" value="${compiler}" />
+
+  <property name="physicianwebapp" value="physicianWebApp"/>
+
+  <property name="physician.ear.src.dir" value="." />
+  <property name="dest.dir" value="${physician.ear.wlcompile.build.dir}" />
+  <property name="ear.file" value="${physician.ear.file}" />
+  <property name="ear.exploded.dir" value="${physician.ear.exploded.dir}" />
+  <property name="app-inf.dest.classes" value="${dest.dir}/APP-INF/classes"/>
+  <property name="app-inf.dest.lib" value="${dest.dir}/APP-INF/lib"/>
+  <property name="app-inf.src.classes" value="${physician.ear.src.dir}/APP-INF/classes"/>
+  <property name="app-inf.src.lib" value="${physician.ear.src.dir}/APP-INF/lib"/>
+
+  <target name="banner">
+    <echo>+---------------------------------------+</echo>
+    <echo>+        Building Physician Ear         +</echo>
+    <echo>+---------------------------------------+</echo>
+  </target>
+
+  <target name="all" depends="clean, build" />
+  <!-- Build application for distribution -->
+  <target name="dist" depends="clean, build, ear" />
+  <target name="stage" depends="clean, build, exploded.ear" />
+
+  <target name="prepare">
+    <!--Setup the directories for the ear level -->
+    <mkdir dir="${app-inf.dest.classes}"/>
+    <mkdir dir="${app-inf.dest.lib}"/>
+    <mkdir dir="${app-inf.src.classes}"/>
+    <mkdir dir="${app-inf.src.lib}"/>
+
+    <!-- Copy libs for ear level -->
+    <!-- MedRec jars -->
+    <copy file="${exceptions.classpath}" todir="${app-inf.dest.lib}" />
+    <copy file="${utils.classpath}" todir="${app-inf.dest.lib}" />
+    <copy file="${value.classpath}" todir="${app-inf.dest.lib}" />
+    <copy file="${common.web.classpath}" todir="${app-inf.dest.lib}" />
+    <!-- 3rd-party jars -->
+    <copy file="${log.classpath}" todir="${app-inf.dest.lib}" />
+    <copy todir="${app-inf.dest.lib}">
+      <fileset dir="${struts.lib.dir}/" includes="commons-*.jar"/>
+    </copy>
+    <copy file="${struts.classpath}" todir="${app-inf.dest.lib}" />
+  </target>
+
+  <!-- builds entire application -->
+  <target name="build" depends="banner, build.ws.client, build.split.dir, appc.split.dir"/>
+
+  <!-- create web service client jar from wsdl -->
+  <target name="build.ws.client" depends="banner,prepare">
+    <clientgen
+      wsdl="${dist.dir}/MedRecService.wsdl"
+      packageName="${webservice.package.name}"
+      keepGenerated="false"
+      clientjar="${app-inf.dest.lib}/${webServicesEjb.client.jar}"/>
+  </target>
+
+  <!-- components in split-dir structure -->
+  <target name="build.split.dir" depends="banner,prepare">
+    <wlcompile srcdir="${physician.ear.src.dir}" destdir="${dest.dir}"/>
+  </target>
+
+  <target name="appc.split.dir">  
+    <wlappc source="${dest.dir}" />
+  </target>
+
+  <target name="appc.exploded.ear">
+    <wlappc source="${ear.exploded.dir}" />
+  </target>
+
+  <target name="appc.ear">
+    <wlappc source="${ear.file}" />
+  </target>
+
+  <!-- deploys entire application -->
+  <target name="deploy.physician.ear" description="Deploy build/physicianEar to WebLogic on localhost:${port}.">
+    <!-- "url" is not required, but the default url is iiop://localhost:${port} -->
+    <wldeploy user="${wls.username}" password="${wls.password}" adminurl="t3://localhost:${port}"
+      action="deploy" name="${physician.ear.display.name}" source="${dest.dir}" />
+  </target>
+
+  <target name="redeploy.physician.ear" description="Redeploy build/physicianEar to WebLogic on localhost:${port}.">
+    <!-- "url" is not required, but the default url is iiop://localhost:${port} -->
+    <wldeploy user="${wls.username}" password="${wls.password}" adminurl="t3://localhost:${port}"
+      action="redeploy" name="${physician.ear.display.name}" source="${dest.dir}"/>
+  </target>
+
+  <target name="deploy.exploded.ear">
+    <wldeploy user="${wls.username}" password="$wls.{password}"
+              action="deploy" name="${physician.ear.name}" source="${ear.exploded.dir}" />
+  </target>
+
+  <!-- package the application as an EAR -->
+  <target name="ear">
+    <wlpackage srcdir="${physician.ear.src.dir}" destdir="${dest.dir}"
+               toFile="${ear.file}" />
+  </target>
+
+  <target name="exploded.ear">
+    <wlpackage srcdir="${physician.ear.src.dir}" destdir="${dest.dir}"
+               toDir="${ear.exploded.dir}" />
+    <!-- Because images are located outside of medrecEar src -->
+    <copy todir="${ear.exploded.dir}/physicianWebApp/images">
+      <fileset dir="${images.dir}"/>
+    </copy>
+  </target>
+
+  <target name="clean" depends="clean.ear,clean.exploded.ear,clean.prepare">
+    <delete dir="${dest.dir}" />
+  </target>
+  
+  <target name="clean.ear">
+    <delete file="${ear.file}"/>
+  </target>
+
+  <target name="clean.exploded.ear">
+    <delete dir="${ear.exploded.dir}"/>
+  </target>
+
+  <target name="clean.prepare">
+    <delete dir="${app-inf.dest.classes}"/>
+    <delete dir="${app-inf.dest.lib}"/>
+    <delete dir="${app-inf.src.classes}"/>
+    <delete file="${physician.ear.src.dir}/physSessionEjbs_client.jar"/>
+  </target>
+
+</project>

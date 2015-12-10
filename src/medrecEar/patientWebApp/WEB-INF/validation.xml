@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!DOCTYPE form-validation PUBLIC
+          "-//Apache Software Foundation//DTD Commons Validator Rules Configuration 1.0//EN"
+          "http://jakarta.apache.org/commons/dtds/validator_1_0.dtd">
+
+<form-validation>
+  <global>
+    <constant>
+      <constant-name>phone</constant-name>
+      <constant-value>^\(?(\d{3})\)?[-|.]?(\d{3})[-|.]?(\d{4})$</constant-value>
+    </constant>
+    <constant>
+      <constant-name>zip</constant-name>
+      <constant-value>^\d{5}\d*$</constant-value>
+    </constant>
+    <constant>
+      <constant-name>multi-word</constant-name>
+      <constant-value>[a-zA-Z\-.']</constant-value>
+    </constant>
+  </global>
+  <formset>
+    <form name="userBean">
+      <field property="username" depends="required, email">
+        <arg0 key="Username"/>
+      </field>
+      <field property="password"
+          depends="required, minlength, maxlength">
+        <arg0 key="Password"/>
+        <arg1 name="minlength" key="${var:minlength}" resource="false"/>
+        <arg1 name="maxlength" key="${var:maxlength}" resource="false"/>
+        <var>
+          <var-name>minlength</var-name>
+          <var-value>8</var-value>
+        </var>
+        <var>
+          <var-name>maxlength</var-name>
+          <var-value>10</var-value>
+        </var>
+      </field>
+    </form>
+    <form name="registrationBean">
+      <field property="userBean.username" depends="required, email">
+        <arg0 key="Username"/>
+      </field>
+      <field property="userBean.password"
+          depends="required, minlength, maxlength">
+        <arg0 key="Password"/>
+        <arg1 name="minlength" key="${var:minlength}" resource="false"/>
+        <arg1 name="maxlength" key="${var:maxlength}" resource="false"/>
+        <var>
+          <var-name>minlength</var-name>
+          <var-value>8</var-value>
+        </var>
+        <var>
+          <var-name>maxlength</var-name>
+          <var-value>10</var-value>
+        </var>
+      </field>
+      <field property="patientBean.firstName" depends="required, mask">
+        <arg0 key="FirstName"/>
+        <var>
+          <var-name>mask</var-name>
+          <var-value>${multi-word}</var-value>
+        </var>
+      </field>
+      <field property="patientBean.middleName" depends="required, mask">
+        <arg0 key="MiddleName"/>
+        <var>
+          <var-name>mask</var-name>
+          <var-value>${multi-word}</var-value>
+        </var>
+      </field>
+      <field property="patientBean.lastName" depends="required, mask">
+        <arg0 key="LastName"/>
+        <var>
+          <var-name>mask</var-name>
+          <var-value>${multi-word}</var-value>
+        </var>
+      </field>
+      <field property="patientBean.gender" depends="required, mask">
+        <arg0 key="Gender"/>
+        <var>
+          <var-name>mask</var-name>
+          <var-value>Male|Female</var-value>
+        </var>
+      </field>
+      <field property="patientBean.dob" depends="required,date">
+        <arg0 key="DOB"/>
+        <var>
+          <var-name>datePatternStrict</var-name>
+          <var-value>MM/dd/yyyy</var-value>
+        </var>
+      </field>
+      <field property="patientBean.ssn" depends="required, mask">
+        <arg0 key="SSN"/>
+        <var>
+          <var-name>mask</var-name>
+          <var-value>\d{9}</var-value>
+        </var>
+      </field>
+      <field property="patientBean.phone" depends="required, mask">
+        <arg0 key="Phone"/>
+        <var>
+          <var-name>mask</var-name>
+          <var-value>${phone}</var-value>
+        </var>
+      </field>
+      <field property="patientBean.address.streetName1" depends="required">
+        <arg0 key="Street"/>
+      </field>
+      <field property="patientBean.address.city" depends="required, mask">
+        <arg0 key="City"/>
+        <var>
+          <var-name>mask</var-name>
+          <var-value>${multi-word}</var-value>
+        </var>
+      </field>
+      <field property="patientBean.address.state" depends="required, mask">
+        <arg0 key="State"/>
+        <var>
+          <var-name>mask</var-name>
+          <var-value>${multi-word}</var-value>
+        </var>
+      </field>
+      <field property="patientBean.address.zipCode" depends="required, mask">
+      <arg0 key="Zip"/>
+        <var>
+          <var-name>mask</var-name>
+          <var-value>${zip}</var-value>
+        </var>
+      </field>
+      <field property="patientBean.address.country" depends="required, mask">
+        <arg0 key="Country"/>
+        <var>
+          <var-name>mask</var-name>
+          <var-value>${multi-word}</var-value>
+        </var>
+      </field>
+    </form>
+    <form name="patientBean">
+      <field property="firstName" depends="required, mask">
+        <arg0 key="FirstName"/>
+        <var>
+          <var-name>mask</var-name>
+          <var-value>${multi-word}</var-value>
+        </var>
+      </field>
+      <field property="middleName" depends="required, mask">
+        <arg0 key="MiddleName"/>
+        <var>
+          <var-name>mask</var-name>
+          <var-value>${multi-word}</var-value>
+        </var>
+      </field>
+      <field property="lastName" depends="required, mask">
+        <arg0 key="LastName"/>
+        <var>
+          <var-name>mask</var-name>
+          <var-value>${multi-word}</var-value>
+        </var>
+      </field>
+      <field property="gender" depends="required, mask">
+        <arg0 key="Gender"/>
+        <var>
+          <var-name>mask</var-name>
+          <var-value>Male|Female</var-value>
+        </var>
+      </field>
+      <field property="dob" depends="required,date">
+        <arg0 key="DOB"/>
+        <var>
+          <var-name>datePatternStrict</var-name>
+          <var-value>MM/dd/yyyy</var-value>
+        </var>
+      </field>
+      <field property="ssn" depends="required, mask">
+        <arg0 key="SSN"/>
+        <var>
+          <var-name>mask</var-name>
+          <var-value>^\d{9}\d*$</var-value>
+        </var>
+      </field>
+      <field property="phone" depends="required, mask">
+        <arg0 key="Phone"/>
+        <var>
+          <var-name>mask</var-name>
+          <var-value>${phone}</var-value>
+        </var>
+      </field>
+      <field property="address.streetName1" depends="required">
+        <arg0 key="Street"/>
+      </field>
+      <field property="address.city" depends="required, mask">
+        <arg0 key="City"/>
+        <var>
+          <var-name>mask</var-name>
+          <var-value>${multi-word}</var-value>
+        </var>
+      </field>
+      <field property="address.state" depends="required, mask">
+        <arg0 key="State"/>
+        <var>
+          <var-name>mask</var-name>
+          <var-value>${multi-word}</var-value>
+        </var>
+      </field>
+      <field property="address.zipCode" depends="required, mask">
+      <arg0 key="Zip"/>
+        <var>
+          <var-name>mask</var-name>
+          <var-value>${zip}</var-value>
+        </var>
+      </field>
+      <field property="address.country" depends="required, mask">
+        <arg0 key="Country"/>
+        <var>
+          <var-name>mask</var-name>
+          <var-value>${multi-word}</var-value>
+        </var>
+      </field>
+      <field property="email" depends="required, email">
+        <arg0 key="Email"/>
+      </field>
+    </form>
+  </formset>
+</form-validation>

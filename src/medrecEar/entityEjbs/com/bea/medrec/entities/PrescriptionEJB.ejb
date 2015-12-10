@@ -1,0 +1,372 @@
+package com.bea.medrec.entities;
+
+import com.bea.medrec.value.Prescription;
+import com.bea.medrec.utils.MedRecUtils;
+import java.sql.Date;
+import java.util.Calendar;
+import javax.ejb.CreateException;
+import weblogic.ejb.GenericEntityBean;
+
+/**
+ * <p>PrescriptionEJB is an Container Managed EntityBean that
+ * manipulates record persisted data.</p>
+ *
+ * @author Copyright (c) 2004 by BEA Systems. All Rights Reserved.
+ *
+ * EJBGen tags:
+ * @ejbgen:jndi-name
+ *
+ * @ejbgen:automatic-key-generation
+ *   name = PRESCRIPTION_SEQ
+ *   type = NAMED_SEQUENCE_TABLE
+ *   cache-size = 10
+ *
+ * @ejbgen:create-default-dbms-tables
+ *   value = Disabled
+ *
+ * @ejbgen:entity
+ *   max-beans-in-cache = 1000
+ *   data-source-name = MedRecTxDataSource
+ *   trans-timeout-seconds = 0
+ *   ejb-name = PrescriptionEJB
+ *   reentrant = False
+ *   concurrency-strategy = Database
+ *   delay-database-insert-until = ejbPostCreate
+ *   table-name = prescription
+ *   read-timeout-seconds = 600
+ *   prim-key-class = java.lang.Integer
+ *   default-transaction = Required
+ *   abstract-schema-name = PrescriptionEJB
+ *
+ * @ejbgen:relation
+ *   cascade-delete = false
+ *   cmr-field = record
+ *   name = Record-Prescriptions
+ *   role-name = Prescriptions-Has-Record
+ *   multiplicity = many
+ *   target-ejb = RecordEJB
+ *   fk-column = record_id
+ *
+ * @ejbgen:finder
+ *   signature = "java.util.Collection findByRecordId(java.lang.Integer n0)"
+ *   ejb-ql = "The query text appears in the corresponding weblogic-query
+ *            element in the weblogic-cmp-rdbms-jar.xml file because ORDERBY
+ *            will be in EJB 2.1"
+ *   weblogic-ejb-ql = "SELECT OBJECT(o) FROM PrescriptionEJB AS o
+ *                      WHERE o.recordId = ?1 ORDERBY o.datePrescribed"
+ *
+ * @ejbgen:finder
+ *   signature = "java.util.Collection findByPatientId(java.lang.Integer n0)"
+ *   ejb-ql = "The query text appears in the corresponding weblogic-query
+ *            element in the weblogic-cmp-rdbms-jar.xml file because ORDERBY
+ *            will be in EJB 2.1"
+ *   weblogic-ejb-ql = "SELECT OBJECT(o) FROM PrescriptionEJB AS o
+ *                      WHERE o.patientId = ?1 ORDERBY o.datePrescribed"
+ *
+ * @ejbgen:file-generation
+ *   local-class = True
+ *   local-home = True
+ *   value-class = False
+ */
+public abstract class PrescriptionEJB extends GenericEntityBean
+{
+      // Local methods
+  // Container managed fields
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmp-field
+  *   column = id
+  *
+  * @ejbgen:primkey-field
+  *
+  * @ejbgen:local-method
+  */
+  public abstract Integer getId();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setId(Integer id);
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmp-field
+  *   column = pat_id
+  *
+  * @ejbgen:local-method
+  */
+  public abstract Integer getPatientId();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setPatientId(Integer patientId);
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmp-field
+  *   column = issuing_phys_id
+  *
+  * @ejbgen:local-method
+  */
+  public abstract Integer getPhysicianId();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setPhysicianId(Integer physicianId);
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmp-field
+  *   column = record_id
+  *
+  * @ejbgen:local-method
+  */
+  public abstract Integer getRecordId();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setRecordId(Integer recordId);
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmp-field
+  *   column = date_prescribed
+  *
+  * @ejbgen:local-method
+  */
+  public abstract java.sql.Date getDatePrescribed();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setDatePrescribed(java.sql.Date datePrescribed);
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmp-field
+  *   column = drug
+  *
+  * @ejbgen:local-method
+  */
+  public abstract String getDrug();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setDrug(String drug);
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmp-field
+  *   column = dosage
+  *
+  * @ejbgen:local-method
+  */
+  public abstract String getDosage();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setDosage(String dosage);
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmp-field
+  *   column = frequency
+  *
+  * @ejbgen:local-method
+  */
+  public abstract String getFrequency();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setFrequency(String frequency);
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmp-field
+  *   column = refills_remaining
+  *
+  * @ejbgen:local-method
+  */
+  public abstract Integer getRefillsRemaining();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setRefillsRemaining(Integer refillsRemaining);
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmp-field
+  *   column = instructions
+  *
+  * @ejbgen:local-method
+  */
+  public abstract String getInstructions();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setInstructions(String instructions);
+
+ /**
+  * Container managed relation fields
+  */
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmr-field
+  *
+  * @ejbgen:local-method
+  */
+  public abstract RecordLocal getRecord();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setRecord(RecordLocal record);
+
+ /**
+  * <p>Returns a value object representation of the bean.</p>
+  *
+  * @return Prescription
+  *
+  * @return Record
+  *
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public Prescription getPrescription()
+  {
+    Prescription rx = new Prescription();
+    rx.setId(getId());
+    rx.setPatientId(getPatientId());
+    rx.setPhysicianId(getPhysicianId());
+    rx.setRecordId(getRecordId());
+    Calendar cal = MedRecUtils.convertSqlDate2Calendar(getDatePrescribed());
+    rx.setDatePrescribed(cal);
+    rx.setDrug(getDrug());
+    rx.setDosage(getDosage());
+    rx.setFrequency(getFrequency());
+    rx.setRefillsRemaining(getRefillsRemaining());
+    rx.setInstructions(getInstructions());
+
+    return rx;
+  }
+
+ /**
+  * <p>Returns an abbreviated value object representation of the bean.
+  *    Fields returned are:<br>
+  *      id<br>
+  *      date<br>
+  *      symptoms<br>
+  *      diagnois</p>
+  *
+  * @return Prescription
+  *
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public Prescription getPrescriptionLite()
+  {
+    Prescription prescription = new Prescription();
+    prescription.setId(getId());
+    Calendar cal = MedRecUtils.convertSqlDate2Calendar(getDatePrescribed());
+    prescription.setDatePrescribed(cal);
+    prescription.setDrug(getDrug());
+    prescription.setFrequency(getFrequency());
+
+    return prescription;
+  }
+
+    // Home methods
+ /***
+  * <p>Prescription create.</p>
+  */
+  public Object ejbCreate(Integer patientId,
+                          Integer physicianId,
+                          Calendar datePrescribed,
+                          String drug,
+                          String dosage,
+                          String frequency,
+                          Integer refillsRemaining,
+                          String instructions,
+                          RecordLocal record)
+    throws CreateException
+  {
+    setPatientId(patientId);
+    setPhysicianId(physicianId);
+    Date sqlDate = MedRecUtils.getDate(datePrescribed);
+    setDatePrescribed(sqlDate);
+    setDrug(drug);
+    setDosage(dosage);
+    setFrequency(frequency);
+    setRefillsRemaining(refillsRemaining);
+    setInstructions(instructions);
+
+    return null;
+  }
+
+  public void ejbPostCreate(Integer patientId,
+                            Integer physicianId,
+                            Calendar datePrescribed,
+                            String drug,
+                            String dosage,
+                            String frequency,
+                            Integer refillsRemaining,
+                            String instructions,
+                            RecordLocal record)
+    throws CreateException
+  {
+    setRecord(record);
+  }
+
+ /***
+  * <p>Prescription create.</p>
+  */
+  public Object ejbCreate(Prescription rx,
+                          RecordLocal record)
+    throws CreateException
+  {
+    setPatientId(Integer.valueOf(rx.getPatientId()));
+    setPhysicianId(Integer.valueOf(rx.getPhysicianId()));
+    Date sqlDate = MedRecUtils.getDate(rx.getDatePrescribed());
+    setDatePrescribed(sqlDate);
+    setDrug(rx.getDrug());
+    setDosage(rx.getDosage());
+    setFrequency(rx.getFrequency());
+    setRefillsRemaining(rx.getRefillsRemaining());
+    setInstructions(rx.getInstructions());
+
+    return null;
+  }
+
+  public void ejbPostCreate(Prescription rx,
+                            RecordLocal record)
+    throws CreateException
+  {
+    /* Delaying the database insert until after ejbPostCreate is required
+      when a cmr-field is mapped to a foreign-key column that doesn't allow
+      null values.  In this case, the cmr-field must be set to a non-null
+      value in ejbPostCreate before the bean is inserted into the database.
+      Note that cmr-fields may not be set during ejbCreate, before the
+      primary key of the bean is known. */
+    setRecord(record);
+  }
+}

@@ -1,0 +1,115 @@
+   BODY {
+  margin: 0; FONT-FAMILY: Arial,Helvetica,sans-serif;}
+
+   TD,  INPUT, SELECT, OPTION, TEXTAREA {
+    FONT-SIZE: 10pt;
+    FONT-FAMILY: Arial,Helvetica,sans-serif;
+    }
+
+
+    a:link {
+            COLOR: #003399;
+    }
+    a:active {
+            COLOR: #FF0000;
+    }
+    a:hover {
+      BACKGROUND-COLOR: #eeeeee;
+    }
+    a:visited {
+            COLOR: #803380;
+    }
+
+    .pagetop {
+    FONT-FAMILY: Arial,sans-serif;
+    COLOR: #02669A;
+      BACKGROUND-COLOR: #C8C8C8;
+    FONT-SIZE: 14pt;
+    FONT-WEIGHT: bold;
+    TEXT-DECORATION: None;
+  }
+
+   .loginborder{
+    border: 2px solid #C8C8C8;
+   }
+  .logincontent{
+    padding: 8px;
+    background-color: #FFFFFF;
+  }
+  .pagetitleMd {
+     background-color: #FFFFCF;
+    COLOR: #993300;
+    FONT-SIZE: 14pt;
+    FONT-WEIGHT: Bold;
+    text-align: left;
+  }
+  .pagetitlePatient {
+    COLOR: #006666;
+    FONT-SIZE: 14pt;
+    FONT-WEIGHT: Bold;
+    background-color: #E9F4F0;
+    text-align: left;
+  }
+  .pagetitleAdmin {
+    COLOR: #336600;
+    FONT-SIZE: 14pt;
+    FONT-WEIGHT: Bold;
+    text-align: left;
+    background-color: #D1FFFE;
+  }
+  .pagetitle-error {
+    COLOR: red;
+    FONT-SIZE: 14pt;
+    FONT-WEIGHT: Bold;
+  }
+
+  .coltitle-md {
+      BACKGROUND-COLOR: #c6d7e7;
+    FONT-WEIGHT: Bold;
+  }
+
+
+
+
+    .title {
+    FONT-SIZE: 120%;
+    FONT-WEIGHT: Bold;
+    VERTICAL-ALIGN: top;
+    padding: 8px;
+  }
+
+
+  .instructions {
+    FONT-SIZE: 10pt;
+    FONT-FAMILY: Arial,Helvetica,sans-serif;
+  }
+
+.languagebutton{background-color: #CAE5FF; width: 100px;}
+
+a.languagebutton,  A.languagebutton:LINK, A.languagebutton:VISITED
+ {border-left: 1px solid #FFFFFF;
+border-right: 1px solid #87CEEB; border-bottom:
+1px solid #87CEEB; border-top: 1px solid #FFFFFF;
+text-align:center;
+background-color: #CAE5FF;
+color:#000000;
+display: block;
+text-decoration:none;
+padding: 2px;
+width: 100px;
+}
+
+A.languagebutton:HOVER
+ {border-left: 1px solid #48A6C4;
+border-right: 1px solid #FFFFFF; border-bottom:
+1px solid #FFFFFF; border-top: 1px solid #4682B4;
+text-align:center;
+background-color: #87CEEB;
+color:#FFFFFF;
+display: block;
+text-decoration:none;
+width: 100px;
+}
+
+
+

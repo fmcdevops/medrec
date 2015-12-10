@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s0="java:com.bea.medrec.webservices" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://tempuri.org/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://tempuri.org/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <types>
+    <s:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="java:com.bea.medrec.webservices">
+      <s:import namespace="http://schemas.xmlsoap.org/soap/encoding/" />
+      <s:complexType name="AddressWS">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="city" nillable="true" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="country" nillable="true" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="id" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="state" nillable="true" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="streetName1" nillable="true" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="streetName2" nillable="true" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="zipCode" nillable="true" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfPatientWS">
+        <s:complexContent mixed="false">
+          <s:restriction base="soapenc:Array">
+            <s:attribute d7p1:arrayType="s0:PatientWS[]" ref="soapenc:arrayType" xmlns:d7p1="http://schemas.xmlsoap.org/wsdl/" />
+          </s:restriction>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="ArrayOfPrescriptionWS">
+        <s:complexContent mixed="false">
+          <s:restriction base="soapenc:Array">
+            <s:attribute d7p1:arrayType="s0:PrescriptionWS[]" ref="soapenc:arrayType" xmlns:d7p1="http://schemas.xmlsoap.org/wsdl/" />
+          </s:restriction>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="ArrayOfRecordWS">
+        <s:complexContent mixed="false">
+          <s:restriction base="soapenc:Array">
+            <s:attribute d7p1:arrayType="s0:RecordWS[]" ref="soapenc:arrayType" xmlns:d7p1="http://schemas.xmlsoap.org/wsdl/" />
+          </s:restriction>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="PatientWS">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="addressWS" nillable="true" type="s0:AddressWS" />
+          <s:element minOccurs="1" maxOccurs="1" name="dateOfBirth" nillable="true" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="email" nillable="true" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="firstName" nillable="true" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="gender" nillable="true" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="id" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="lastName" nillable="true" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="middleName" nillable="true" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="phone" nillable="true" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="ssn" nillable="true" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="PrescriptionWS">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="datePrescribed" nillable="true" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="dosage" nillable="true" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="drug" nillable="true" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="frequency" nillable="true" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="id" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="instructions" nillable="true" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="patientId" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="physicianId" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="recordId" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="refillsRemaining" nillable="true" type="s:int" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="RecordWS">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="date" nillable="true" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="diagnosis" nillable="true" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="id" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="notes" nillable="true" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="patientId" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="physicianId" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="prescriptions" nillable="true" type="s0:ArrayOfPrescriptionWS" />
+          <s:element minOccurs="1" maxOccurs="1" name="symptoms" nillable="true" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="vitalSigns" nillable="true" type="s0:VitalSignsWS" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="RecordsSummaryWS">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="prescriptions" nillable="true" type="s0:ArrayOfPrescriptionWS" />
+          <s:element minOccurs="1" maxOccurs="1" name="records" nillable="true" type="s0:ArrayOfRecordWS" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="VitalSignsWS">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="bloodPressure" nillable="true" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="height" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="id" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="pulse" nillable="true" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="temperature" nillable="true" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="weight" nillable="true" type="s:int" />
+        </s:sequence>
+      </s:complexType>
+    </s:schema>
+  </types>
+  <message name="registerPatient">
+    <part name="patient" type="s0:PatientWS" />
+    <part name="password" type="s:string" />
+  </message>
+  <message name="registerPatientResponse" />
+  <message name="updatePatient">
+    <part name="patient" type="s0:PatientWS" />
+  </message>
+  <message name="updatePatientResponse" />
+  <message name="findPatientBySsn">
+    <part name="id" type="s:string" />
+  </message>
+  <message name="findPatientBySsnResponse">
+    <part name="result" type="s0:PatientWS" />
+  </message>
+  <message name="findPatientByLastNameWild">
+    <part name="lastName" type="s:string" />
+  </message>
+  <message name="findPatientByLastNameWildResponse">
+    <part name="result" type="s0:ArrayOfPatientWS" />
+  </message>
+  <message name="addRecord">
+    <part name="record" type="s0:RecordWS" />
+  </message>
+  <message name="addRecordResponse" />
+  <message name="getRecordsSummary">
+    <part name="id" type="s:int" />
+  </message>
+  <message name="getRecordsSummaryResponse">
+    <part name="result" type="s0:RecordsSummaryWS" />
+  </message>
+  <message name="getRecord">
+    <part name="id" type="s:int" />
+  </message>
+  <message name="getRecordResponse">
+    <part name="result" type="s0:RecordWS" />
+  </message>
+  <portType name="MedRecWebServicesPort">
+    <operation name="registerPatient">
+      <input message="tns:registerPatient" />
+      <output message="tns:registerPatientResponse" />
+    </operation>
+    <operation name="updatePatient">
+      <input message="tns:updatePatient" />
+      <output message="tns:updatePatientResponse" />
+    </operation>
+    <operation name="findPatientBySsn">
+      <input message="tns:findPatientBySsn" />
+      <output message="tns:findPatientBySsnResponse" />
+    </operation>
+    <operation name="findPatientByLastNameWild">
+      <input message="tns:findPatientByLastNameWild" />
+      <output message="tns:findPatientByLastNameWildResponse" />
+    </operation>
+    <operation name="addRecord">
+      <input message="tns:addRecord" />
+      <output message="tns:addRecordResponse" />
+    </operation>
+    <operation name="getRecordsSummary">
+      <input message="tns:getRecordsSummary" />
+      <output message="tns:getRecordsSummaryResponse" />
+    </operation>
+    <operation name="getRecord">
+      <input message="tns:getRecord" />
+      <output message="tns:getRecordResponse" />
+    </operation>
+  </portType>
+  <binding name="MedRecWebServicesPort" type="tns:MedRecWebServicesPort">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="rpc" />
+    <operation name="registerPatient">
+      <soap:operation soapAction="" style="rpc" />
+      <input>
+        <soap:body use="encoded" namespace="http://tempuri.org/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+        <soap:body use="encoded" namespace="http://tempuri.org/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+    <operation name="updatePatient">
+      <soap:operation soapAction="" style="rpc" />
+      <input>
+        <soap:body use="encoded" namespace="http://tempuri.org/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+        <soap:body use="encoded" namespace="http://tempuri.org/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+    <operation name="findPatientBySsn">
+      <soap:operation soapAction="" style="rpc" />
+      <input>
+        <soap:body use="encoded" namespace="http://tempuri.org/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+        <soap:body use="encoded" namespace="http://tempuri.org/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+    <operation name="findPatientByLastNameWild">
+      <soap:operation soapAction="" style="rpc" />
+      <input>
+        <soap:body use="encoded" namespace="http://tempuri.org/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+        <soap:body use="encoded" namespace="http://tempuri.org/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+    <operation name="addRecord">
+      <soap:operation soapAction="" style="rpc" />
+      <input>
+        <soap:body use="encoded" namespace="http://tempuri.org/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+        <soap:body use="encoded" namespace="http://tempuri.org/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+    <operation name="getRecordsSummary">
+      <soap:operation soapAction="" style="rpc" />
+      <input>
+        <soap:body use="encoded" namespace="http://tempuri.org/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+        <soap:body use="encoded" namespace="http://tempuri.org/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+    <operation name="getRecord">
+      <soap:operation soapAction="" style="rpc" />
+      <input>
+        <soap:body use="encoded" namespace="http://tempuri.org/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+        <soap:body use="encoded" namespace="http://tempuri.org/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+  </binding>
+  <service name="MedRecWebServices">
+    <port name="MedRecWebServicesPort" binding="tns:MedRecWebServicesPort">
+      <soap:address location="http://localhost:80/ws_medrec/MedRecWebServices" />
+    </port>
+  </service>
+</definitions>

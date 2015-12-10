@@ -1,0 +1,62 @@
+<project name="webservices" default="build" basedir=".">
+
+  <!-- set global properties for this build -->
+  <property environment="env"/>
+  <property file="../medrec.properties"/>
+  <property name="build.compiler" value="${compiler}"/>
+
+  <property name="src" value="."/>
+  <property name="webservices.build" value="${build.dir}/clients"/>
+
+  <target name="all" depends="build, run"/>
+
+  <target name="build" depends="clean, init, build.ws.client, compile.client"/>
+
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <echo message="####   S T A R T   C L I E N T S   ####"/>
+    <mkdir dir="${webservices.build}"/>
+  </target>
+
+  <target name="clean">
+  </target>
+
+  <!-- create web service client jar from wsdl -->
+  <target name="build.ws.client">
+    <clientgen
+      wsdl="${dist.dir}/MedRecService.wsdl"
+      packageName="${webservice.package.name}"
+      keepGenerated="false"
+      clientjar="${webservices.build}/${webServicesEjb.client.jar}"/>
+  </target>
+
+  <!-- compile the PatientWebService class to the ${webservices.build} directory where the service
+       generator will look for it when it builds the web service -->
+  <target name="compile.client" depends="build.ws.client">
+    <mkdir dir="${webservices.build}"/>
+    <javac
+      srcdir="${src}"
+      destdir="${webservices.build}"
+      includes="**/*.java"
+      classpath="${java.class.path};${log.classpath};${utils.classpath};${value.classpath};${webservices.build}/${webServicesEjb.client.jar}"
+      deprecation="${deprecation}"
+      debug="${debug}"
+    />
+  </target>
+
+
+  <!-- call the webservice to get the expected result in the server output -->
+  <target name="run">
+    <echo message="${webservices.build}"/>
+    <java classname="com.bea.medrec.webservices.swing.SwingClient" fork="true">
+      <sysproperty key="weblogic.webservice.verbose" value="true"/>
+      <sysproperty key="wsdl.location" value="http://localhost:${port}/ws_medrec/MedRecWebServices?WSDL"/>
+      <classpath>
+        <pathelement location="${webservices.build}/${webServicesEjb.client.jar}"/>
+        <pathelement path="${java.class.path}"/>
+        <pathelement path="${webservices.build};${log.classpath};${value.classpath};${utils.classpath}"/>
+      </classpath>
+    </java>
+  </target>
+</project>

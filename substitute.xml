@@ -1,0 +1,11 @@
+<project name="Tutorial Macro-sub" default="replace.wl.home">
+
+  <property file="./src/medrec.properties"/>
+
+  <target name="replace.wl.home">
+    <replace dir="." includes="**/weblogic.xml">
+      <replacefilter token="@WL_HOME" value='${wl.home}'/>
+    </replace>
+  </target>
+
+</project>

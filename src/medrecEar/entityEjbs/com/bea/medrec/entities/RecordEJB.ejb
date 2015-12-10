@@ -1,0 +1,475 @@
+package com.bea.medrec.entities;
+
+import com.bea.medrec.value.Prescription;
+import com.bea.medrec.value.Record;
+import com.bea.medrec.value.VitalSigns;
+import com.bea.medrec.utils.JNDINames;
+import com.bea.medrec.utils.MedRecUtils;
+import com.bea.medrec.utils.ServiceLocator;
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Iterator;
+import javax.ejb.CreateException;
+import javax.ejb.EJBException;
+import javax.ejb.EntityContext;
+import javax.naming.NamingException;
+import org.apache.log4j.Logger;
+import weblogic.ejb.GenericEntityBean;
+
+/**
+ * <p>RecordEJB is an Container Managed EntityBean that
+ * manipulates record persisted data.</p>
+ *
+ * @author Copyright (c) 2004 by BEA Systems. All Rights Reserved.
+ *
+ * EJBGen tags:
+ * @ejbgen:jndi-name
+ *
+ * @ejbgen:automatic-key-generation
+ *   name = RECORD_SEQ
+ *   type = NAMED_SEQUENCE_TABLE
+ *   cache-size = 10
+ *
+ * @ejbgen:create-default-dbms-tables
+ *   value = Disabled
+ *
+ * @ejbgen:entity
+ *   max-beans-in-cache = 1000
+ *   data-source-name = MedRecTxDataSource
+ *   trans-timeout-seconds = 0
+ *   ejb-name = RecordEJB
+ *   reentrant = False
+ *   concurrency-strategy = Database
+ *   delay-database-insert-until = ejbPostCreate
+ *   table-name = record
+ *   read-timeout-seconds = 600
+ *   prim-key-class = java.lang.Integer
+ *   default-transaction = Required
+ *   abstract-schema-name = RecordEJB
+ *
+ * @ejbgen:relation
+ *   cascade-delete = false
+ *   cmr-field = prescriptions
+ *   name = Record-Prescriptions
+ *   multiplicity = one
+ *   target-ejb = PrescriptionEJB
+ *
+ * @ejbgen:relation
+ *   cascade-delete = false
+ *   cmr-field = vitalSigns
+ *   name = Record-VitalSigns
+ *   multiplicity = one
+ *   target-ejb = VitalSignsEJB
+ *   fk-column = vital_id
+ *
+ * @ejbgen:ejb-local-ref
+ *   name = ejb/local/prescription
+ *   home = com.bea.medrec.entities.PrescriptionLocalHome
+ *   local = com.bea.medrec.entities.PrescriptionLocal
+ *   type = Entity
+ *   link = PrescriptionEJB
+ *
+ * @ejbgen:ejb-local-ref
+ *   name = ejb/local/vitalsigns
+ *   home = com.bea.medrec.entities.VitalSignsLocalHome
+ *   local = com.bea.medrec.entities.VitalSignsLocal
+ *   type = Entity
+ *   link = VitalSignsEJB
+ *
+ * @ejbgen:finder
+ *   signature = "com.bea.medrec.entities.RecordLocal findByRecordId(java.lang.Integer n0)"
+ *   ejb-ql = "SELECT OBJECT(o) FROM RecordEJB AS o WHERE o.id = ?1"
+ *
+ * @ejbgen:finder
+ *   signature = "java.util.Collection findByPatientId(java.lang.Integer n0)"
+ *   ejb-ql = "The query text appears in the corresponding weblogic-query
+ *            element in the weblogic-cmp-rdbms-jar.xml file because it uses
+ *            the group name which is a WebLogic extension. ORDERBY
+ *            will be in EJB 2.1."
+ *   weblogic-ejb-ql = "SELECT OBJECT(o) FROM RecordEJB AS o
+ *                      WHERE o.patientId = ?1 ORDERBY o.date"
+ *   group-name = liteWeight
+ *
+ * @ejbgen:file-generation
+ *   local-class = True
+ *   local-home = True
+ *   value-class = False
+ */
+public abstract class RecordEJB extends GenericEntityBean
+{
+  private static Logger logger = Logger.getLogger(RecordEJB.class.getName());
+
+  // Attributes
+  private EntityContext ctx;
+  private VitalSignsLocalHome vitalsHome;
+
+      // Local methods
+  // Container managed fields
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmp-field
+  *   column = id
+  *   group-names = liteWeight
+  *
+  * @ejbgen:primkey-field
+  *
+  * @ejbgen:local-method
+  */
+  public abstract Integer getId();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setId(Integer id);
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmp-field
+  *   column = pat_id
+  *   group-names = liteWeight
+  *
+  * @ejbgen:local-method
+  */
+  public abstract Integer getPatientId();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setPatientId(Integer patientId);
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmp-field
+  *   column = phys_id
+  *
+  * @ejbgen:local-method
+  */
+  public abstract Integer getPhysicianId();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setPhysicianId(Integer physicianId);
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmp-field
+  *   column = record_date
+  *   group-names = liteWeight
+  *
+  * @ejbgen:local-method
+  */
+  public abstract Date getDate();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setDate(Date date);
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmp-field
+  *   column = symptoms
+  *   group-names = liteWeight
+  *
+  * @ejbgen:local-method
+  */
+  public abstract String getSymptoms();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setSymptoms(String symptons);
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmp-field
+  *   column = diagnosis
+  *
+  * @ejbgen:local-method
+  */
+  public abstract String getDiagnosis();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setDiagnosis(String diagnosis);
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmp-field
+  *   column = notes
+  *
+  * @ejbgen:local-method
+  */
+  public abstract String getNotes();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setNotes(String notes);
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmp-field
+  *   column = vital_id
+  *
+  * @ejbgen:local-method
+  */
+  public abstract Integer getVitalSignsId();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setVitalSignsId(Integer vitalSignsId);
+
+ /**
+  * Container managed relation fields
+  */
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmr-field
+  *
+  * @ejbgen:local-method
+  */
+  public abstract VitalSignsLocal getVitalSigns();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setVitalSigns(VitalSignsLocal vitalSigns);
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmr-field
+  *
+  * @ejbgen:local-method
+  */
+  public abstract Collection getPrescriptions();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setPrescriptions(Collection prescriptions);
+
+//  Physician association not implemented due to CR083432.
+//  public abstract PhysicianLocal getPhysician();
+//  public abstract void setPhysician(PhysicianLocal physician);
+
+  /**
+   * <p>Returns a value object representation of the bean.</p>
+   *
+   * @return Record
+   *
+   * EJBGen tags:
+   * @ejbgen:local-method
+   */
+   public Record getRecord()
+   {
+     Record record = new Record();
+     record.setId(getId());
+     record.setPatientId(getPatientId());
+     record.setPhysicianId(getPhysicianId());
+/*
+    Physician association not implemented due to CR083432.
+    String physName = getPhysician().getFirstName()+" "+
+                      getPhysician().getMiddleName()+" "+
+                      getPhysician().getLastName();
+    record.setPhysicianName(physName);
+*/
+     Calendar cal = MedRecUtils.convertSqlDate2Calendar(getDate());
+     record.setDate(cal);
+     record.setSymptoms(getSymptoms());
+     record.setDiagnosis(getDiagnosis());
+     record.setNotes(getNotes());
+     record.setVitalSigns(getVitalSigns().getVitalSigns());
+     record.setPrescriptions(getRxs());
+     logger.debug(record.toString());
+
+     return record;
+   }
+
+  /**
+   * <p>Returns an abbreviated value object representation of the bean.
+   *    Fields returned are:<br>
+   *      id<br>
+   *      date<br>
+   *      symptoms<br>
+   *      diagnois</p>
+   *
+   * @return Record
+   *
+   * @return Record
+   *
+   * EJBGen tags:
+   * @ejbgen:local-method
+   */
+   public Record getRecordLite()
+   {
+     Record record = new Record();
+     record.setId(getId());
+/*
+    Physician association not implemented due to CR083432.
+    String physName = getPhysician().getFirstName()+" "+
+                      getPhysician().getMiddleName()+" "+
+                      getPhysician().getLastName();
+    record.setPhysicianName(physName);
+*/
+     Calendar cal = MedRecUtils.convertSqlDate2Calendar(getDate());
+     record.setDate(cal);
+     record.setSymptoms(getSymptoms());
+     record.setDiagnosis(getDiagnosis());
+
+     return record;
+   }
+
+       // Lifecycle method
+ /**
+  * <p>Sets the entity context.  Get handles for all
+  * required entity beans.</p>
+  *
+  * @param ctx  EntityContext for entity
+  */
+  public void setEntityContext(EntityContext ctx)
+  {
+    this.ctx = ctx;
+    try {
+      // Entity bean homes.
+      vitalsHome = getVitalSignsLocalHome();
+    } catch(NamingException ne) {
+      throw new EJBException(ne);
+    }
+  }
+
+      // Home methods
+ /**
+  * <p>Record create.</p>
+  */
+  public Object ejbCreate() throws CreateException
+  {
+    return null;
+  }
+
+  public void ejbPostCreate() throws CreateException { /* not implemented */ }
+
+ /**
+  * <p>Record create.</p>
+  */
+  public Object ejbCreate(Record record)
+    throws NamingException, CreateException
+  {
+    logger.debug("Record: "+record.toString());
+    setPatientId(record.getPatientId());
+    setPhysicianId(record.getPhysicianId());
+    Date sqlDate = MedRecUtils.getDate(record.getDate());
+    setDate(sqlDate);
+    setSymptoms(record.getSymptoms());
+    setDiagnosis(record.getDiagnosis());
+    setNotes(record.getNotes());
+    return null;
+  }
+
+ /**
+  * <p>Record create.</p>
+  */
+  public void ejbPostCreate(Record record)
+    throws NamingException, CreateException
+  {
+    // Vital Signs relationship
+    VitalSignsLocal vitalSigns = vitalsHome.create(record.getVitalSigns());
+    setVitalSigns(vitalSigns);
+  }
+
+ /**
+  * <p>Record create.</p>
+  */
+  public Object ejbCreate(Integer patientId,
+                          Integer physicianId,
+                          Calendar date,
+                          String symptoms,
+                          String diagnosis,
+                          String notes,
+                          VitalSigns vitalSigns)
+    throws NamingException, CreateException
+  {
+    setPatientId(patientId);
+    setPhysicianId(physicianId);
+    java.sql.Date sqlDate = MedRecUtils.getDate(date);
+    setDate(sqlDate);
+    setSymptoms(symptoms);
+    setDiagnosis(diagnosis);
+    setNotes(notes);
+
+    return null;
+  }
+
+  public void ejbPostCreate(Integer patientId,
+                            Integer physicianId,
+                            Calendar date,
+                            String symptoms,
+                            String diagnosis,
+                            String notes,
+                            VitalSigns vitalSigns)
+    throws NamingException, CreateException
+  {
+    VitalSignsLocal vitalsLocal = vitalsHome.create(vitalSigns.getTemperature(),
+                                                  vitalSigns.getBloodPressure(),
+                                                  vitalSigns.getPulse(),
+                                                  vitalSigns.getWeight(),
+                                                  vitalSigns.getHeight());
+    setVitalSigns(vitalsLocal);
+  }
+
+      // Utility methods
+ /**
+  * Returns serializable Collection of Prescriptions.
+  */
+  private Collection getRxs()
+  {
+    Collection returnList = null;
+    Collection rXs = getPrescriptions();
+    if (rXs != null && rXs.size() > 0) {
+      logger.debug("Num of rxs: "+rXs.size());
+      Iterator iter = rXs.iterator();
+      returnList = new ArrayList();
+      while (iter.hasNext()) {
+        PrescriptionLocal rxLocal = (PrescriptionLocal)iter.next();
+        Prescription rx = rxLocal.getPrescription();
+        logger.debug(rx.toString());
+        returnList.add(rx);
+      }
+    }
+    return returnList;
+  }
+
+ /**
+  * Get Vital Signs Entity EJB local home
+  */
+  public VitalSignsLocalHome getVitalSignsLocalHome() throws NamingException {
+    return (VitalSignsLocalHome)lookUpLocalHome(JNDINames.VITALSIGNS_LOCAL_HOME,
+      VitalSignsLocalHome.class);
+  }
+
+ /**
+  * Get local home
+  */
+  public Object lookUpLocalHome(String pHome, Class pClazz)
+    throws NamingException {
+    ServiceLocator locator = ServiceLocator.getInstance();
+    Object obj = locator.lookupLocalHome(pHome, pClazz);
+    return obj;
+  }
+}

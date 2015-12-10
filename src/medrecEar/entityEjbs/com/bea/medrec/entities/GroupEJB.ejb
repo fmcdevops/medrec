@@ -1,0 +1,91 @@
+package com.bea.medrec.entities;
+
+import javax.ejb.CreateException;
+import weblogic.ejb.GenericEntityBean;
+
+/**
+ * <p>GroupEJB is a Container Managed EntityBean that
+ * manipulates group persisted data.</p>
+ *
+ * @author Copyright (c) 2004 by BEA Systems. All Rights Reserved.
+ *
+ * EJBGen tags:
+ * @ejbgen:jndi-name
+ *
+ * @ejbgen:create-default-dbms-tables
+ *   value = Disabled
+ *
+ * @ejbgen:entity
+ *   max-beans-in-cache = 1000
+ *   data-source-name = MedRecTxDataSource
+ *   trans-timeout-seconds = 0
+ *   ejb-name = GroupEJB
+ *   reentrant = False
+ *   concurrency-strategy = Database
+ *   delay-database-insert-until = ejbPostCreate
+ *   table-name = groups
+ *   read-timeout-seconds = 600
+ *   prim-key-class = com.bea.medrec.entities.GroupCPK
+ *   default-transaction = Required
+ *   abstract-schema-name = GroupEJB
+ *
+ * @ejbgen:file-generation
+ *   local-class = True
+ *   local-home = True
+ *   pk-class = True
+ *   value-class = False
+ */
+public abstract class GroupEJB extends GenericEntityBean {
+
+      // Local methods
+  // Container managed fields
+ /**
+  * @ejbgen:cmp-field
+  *   column = group_name
+  *
+  * @ejbgen:primkey-field
+  *
+  * @ejbgen:local-method
+  *
+  */
+  public abstract String getGroupname();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setGroupname(String groupname);
+
+ /**
+  * @ejbgen:cmp-field
+  *   column = username
+  *
+  * @ejbgen:primkey-field
+  *
+  * @ejbgen:local-method
+  *
+  */
+  public abstract String getUsername();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setUsername(String username);
+
+      // Home methods
+ /**
+  * <p>Group create.</p>
+  */
+  public Object ejbCreate(String groupname, String username)
+    throws CreateException
+  {
+    setGroupname(groupname);
+    setUsername(username);
+    return null;
+  }
+
+  public void ejbPostCreate(String groupname, String username)
+    throws CreateException
+  { /* not implemented */ }
+}

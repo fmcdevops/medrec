@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE struts-config PUBLIC
+          "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN"
+          "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+
+
+<struts-config>
+
+  <!--   F O R M   B E A N S   -->
+  <form-beans>
+    <form-bean
+        name="patientApprovalBean"
+        type="com.bea.medrec.beans.PatientApprovalBean"/>
+
+    <form-bean
+        name="userBean"
+        type="com.bea.medrec.beans.UserBean"/>
+  </form-beans>
+
+    <!--   G L O B A L   F O R W A R D S   -->
+  <global-forwards>
+    <forward name="medrec.startpage" path="start.jsp" redirect="true"/>
+    <forward name="error" path="/Error.jsp"/>
+    <forward name="home" path="/home.do" redirect="true"/>
+    <forward name="login.home.redirect" path="/login.do" redirect="true"/>
+  </global-forwards>
+
+  <!--   A C T I O N   M A P P I N G S   -->
+  <action-mappings>
+    <action
+      path="/approve"
+      type="com.bea.medrec.actions.ApprovePatientRequestAction"
+      name="patientApprovalBean"
+      scope="request"
+      input="/PatientApprovalView.jsp"
+      parameter="action">
+      <forward name="patient.approval.success" path="/viewrequests.do"/>
+      <forward name="patient.approval.failure" path="/viewrequests.do"/>
+    </action>
+
+    <action
+      path="/error"
+      type="com.bea.medrec.actions.ErrorAction">
+      <forward name="error" path="/Error.jsp"/>
+    </action>
+
+    <action
+      path="/import"
+      type="com.bea.medrec.actions.ImportRecordAction"
+      scope="request">
+      <forward name="confirm.import" path="/ConfirmImport.jsp"/>
+      <forward name="view.import.files" path="/viewimports.do"/>
+    </action>
+
+    <action
+      path="/home"
+      type="com.bea.medrec.actions.HomeAction"
+      scope="request">
+      <forward name="home" path="/Home.jsp"/>
+    </action>
+
+    <action
+      path="/login"
+      type="com.bea.medrec.actions.AdminLoginAction"
+      name="userBean"
+      scope="request"
+      input="/Login.jsp"
+      validate="true">
+      <forward name="login.home" path="/Login.jsp"/>
+      <forward name="login.success" path="/home.do"/>
+      <forward name="login.failure" path="/Login.jsp"/>
+    </action>
+
+    <action
+      path="/logout"
+      type="com.bea.medrec.actions.AdminLogoutAction"
+      scope="request">
+    </action>
+
+    <action
+      path="/viewimports"
+      type="com.bea.medrec.actions.ViewImportRecordsAction"
+      scope="request">
+      <forward name="view.import.files" path="/ViewImportRecords.jsp"/>
+    </action>
+
+    <action
+      path="/viewpatientrequest"
+      type="com.bea.medrec.actions.ViewPatientRequestAction"
+      name="userBean"
+      scope="request">
+      <forward name="view.patient.request" path="/ViewPatientRequest.jsp"/>
+    </action>
+
+    <action
+      path="/viewrequests"
+      type="com.bea.medrec.actions.ViewRequestsAction"
+      scope="request">
+      <forward name="view.requests" path="/ViewRequests.jsp"/>
+    </action>
+  </action-mappings>
+
+  <!--   C O N T R O L L E R   -->
+  <controller>
+    <set-property property="debug" value="2"/>
+    <set-property property="nocache" value="true"/>
+  </controller>
+
+  <!--   M E S S A G E   R E S O U R C E S   -->
+  <message-resources
+    parameter="com.bea.medrec.utils.ApplicationResources"/>
+
+  <!--   P L U G - I N S   -->
+  <plug-in className="org.apache.struts.validator.ValidatorPlugIn">
+    <set-property property="pathnames"
+                     value="/WEB-INF/validator-rules.xml,
+                            /WEB-INF/validation.xml"/>
+  </plug-in>
+
+</struts-config>

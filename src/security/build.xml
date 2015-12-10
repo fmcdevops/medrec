@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<project name="security" default="all" basedir=".">
+
+  <!-- set global properties for this build -->
+  <property environment="env"/>
+  <property file="../medrec.properties"/>
+  <property name="build.compiler" value="${compiler}"/>
+
+  <property name="src" value="."/>
+  <property name="security.build" value="${build.tmp}"/>
+
+ <!-- global properties -->
+  <property environment="env"/>
+  <property name="lib" value="${wl.home}/server/lib"/>
+  <property name="mbeantypes" value="${lib}/mbeantypes"/>
+  <property name="medrecprovidersjar" value="wlMedRecSampleAuthProvider.jar"/>
+
+
+  <target name="all" depends="clean, init, copy.xml, build.mdf, build.provider"/>
+
+  <target name="init"> 
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <echo message="####   S T A R T   S E C U R I T Y   C O M P O N E N T   ####"/>
+    <mkdir dir="${security.build}"/>
+  </target>
+
+  <!-- Only copy over the commo dtd and sample provider xml files for now -->
+  <target name="copy.xml">
+    <copy todir="${security.build}" flatten="true">
+      <fileset dir="${lib}">
+        <include name="commo.dtd"/>
+      </fileset>
+    </copy>
+    <copy todir="${security.build}" flatten="true">
+      <fileset dir="${src}">
+        <include name="**/*.xml"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <!-- helper to build an MDF (mbean definition file) -->
+  <target name="build.mdf">
+    <java classname="weblogic.management.commo.WebLogicMBeanMaker" fork="true" failonerror="true">
+      <jvmarg line="-Dfiles=${security.build} -DMDF=${security.build}/MedRecSampleAuthenticator.xml -DcreateStubs=true"/>
+      <classpath>
+        <pathelement path="${java.class.path}"/>
+        <pathelement location="${security.build}"/>
+        <pathelement location="${mbeantypes}/wlManagement.jar"/>
+      </classpath>
+    </java>
+  </target>
+
+  <target name="build.provider">
+    <!-- Copy over sources (they depend on generated code so they can't be copied over until now) -->
+    <copy todir="${security.build}" flatten="true" overwrite="true">
+      <fileset dir="${src}">
+        <include name="**/*.java"/>
+      </fileset>
+    </copy>
+    <!-- Build the sample security providers' jar file -->
+    <java classname="weblogic.management.commo.WebLogicMBeanMaker" fork="true" failonerror="true">
+      <jvmarg line="-Dfiles=${security.build} -DMJF=${security.build}/${medrecprovidersjar}"/>
+      <classpath>
+        <pathelement path="${java.class.path}"/>
+        <pathelement location="${mbeantypes}/wlManagement.jar"/>
+      </classpath>
+    </java>
+
+    <!-- Deploy the sample security providers -->
+    <copy todir="${mbeantypes}" flatten="true">
+      <fileset dir="${security.build}">
+        <include name="${medrecprovidersjar}"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="clean">
+    <delete quiet="true" dir="${security.build}"/>
+    <delete quiet="true" file="${mbeantypes}/${medrecprovidersjar}"/>
+  </target>
+
+</project>

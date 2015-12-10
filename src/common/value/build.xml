@@ -1,0 +1,50 @@
+<project name="value" default="all" basedir=".">
+
+  <!-- set global properties for this build -->
+  <property environment="env"/>
+  <property file="../../medrec.properties"/>
+  <property name="build.compiler" value="${compiler}"/>
+
+  <property name="value.source" value="."/>
+  <property name="value.build" value="${build.tmp}"/>
+
+  <target name="all" depends="build"/>
+
+  <target name="build" depends="clean, banner, compile, jar"/>
+
+  <target name="banner">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <!--<echo message="Building with classpath of :${java.class.path};${log.classpath}"/>-->
+    <echo message="####   S T A R T   C O M M O N   V A L U E   O B J E C T S   ####"/>
+    <mkdir dir="${value.build}"/>
+  </target>
+
+  <!-- Compile base value object -->
+  <target name="compile">
+    <javac srcdir="${value.source}" destdir="${value.build}"
+       includes="**/*.java"
+       classpath="${log.classpath}"
+       deprecation="${deprecation}"
+       debug="${debug}"
+       />
+  </target>
+
+  <!-- Make a standard jar file -->
+  <target name="jar">
+    <jar jarfile="${value.classpath}"
+      basedir="${value.build}"
+      update="yes">
+    </jar>
+    <ant target="clean.build"/>
+  </target>
+
+  <target name="clean.build">
+    <delete dir="${value.build}"/>
+  </target>
+
+  <target name="clean" depends="clean.build">
+    <delete file="${value.classpath}"/>
+  </target>
+
+</project>

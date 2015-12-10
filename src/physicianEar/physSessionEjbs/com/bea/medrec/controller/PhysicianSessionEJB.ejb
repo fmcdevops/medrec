@@ -1,0 +1,322 @@
+package com.bea.medrec.controller;
+
+import com.bea.medrec.utils.MedRecUtils;
+import com.bea.medrec.value.Record;
+import com.bea.medrec.value.RecordsSummary;
+import com.bea.medrec.value.Search;
+import com.bea.medrec.webservices.*;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
+import javax.ejb.EJBException;
+import javax.ejb.SessionContext;
+import javax.xml.rpc.soap.SOAPFaultException;
+import org.apache.log4j.Logger;
+import weblogic.ejb.GenericSessionBean;
+
+/**
+ * <p>Session Bean implementation for physician functionality including
+ * access MedRec web services.</p>
+ *
+ * @author Copyright (c) 2004 by BEA Systems. All Rights Reserved.
+ *
+ * EJBGen tags:
+ * @ejbgen:session
+ *   max-beans-in-free-pool = 1000
+ *   initial-beans-in-free-pool = 0
+ *   trans-timeout-seconds = 0
+ *   type = Stateless
+ *   default-transaction = Required
+ *   enable-call-by-reference = True
+ *   ejb-name = PhysicianSessionEJB
+ *
+ * @ejbgen:jndi-name
+ *   remote = PhysicianSessionEJB.PhysicianSessionHome
+ */
+public class PhysicianSessionEJB extends GenericSessionBean {
+
+  private static Logger logger =
+    Logger.getLogger(PhysicianSessionEJB.class.getName());
+
+  // Instance variables
+  private SessionContext ctx;
+  private MedRecWebServicesPort port;
+
+ /**
+  * <p>Sets the session context.  Get handles for all
+  * session and entity and JMS connections used throughout
+  * this session bean.</p>
+  *
+  * @param ctx  SessionContext Context for session
+  */
+  public void setSessionContext(SessionContext ctx)
+  {
+    this.ctx = ctx;
+    try {
+      // Web service handle.
+      port = getMedRecWebServicesPort();
+    } catch(Exception e) {
+      throw new EJBException(e);
+    }
+  }
+
+  // Public Methods
+
+      //  A D D   R E C O R D
+  /**
+  * <p>Accesses MedRec Web service adding a record, including
+  * vital signs and prescriptions.</p>
+  *
+  * @param pRecord
+  *
+  * @exception RemoteException
+  *
+  * EJBGen tags:
+  * @ejbgen:remote-method
+  */
+  public void addRecord(Record pRecord)
+    throws RemoteException
+  {
+    logger.info("Adding record.");
+    logger.debug(pRecord.toString());
+
+    try {
+      RecordWS recordWS = PhysicianClientUtils.toRecordWS(pRecord);
+      port.addRecord(recordWS);
+    }
+    catch(SOAPFaultException sfe) {
+      logger.error(sfe.getFaultString(), sfe);
+      throw new EJBException(sfe);
+    }
+    catch(Exception e) {
+      logger.error(e.getMessage(), e);
+       throw new EJBException(e);
+    }
+  }
+
+      //  G E T   A   R E C O R D
+  /**
+  * <p>Accesses MedRec Web service retrieving all information
+  * for a visit given a record id. This includes vital signs,
+  * the record, and any prescriptions.</p>
+  *
+  * @param pId    Id of the patient.
+  *
+  * @return Collection  Collection of lite record value objects.
+  *
+  * @exception RemoteException
+  *
+  * EJBGen tags:
+  * @ejbgen:remote-method
+  */
+  public Record getRecord(Integer pId) throws RemoteException
+  {
+    logger.info("Getting record.");
+    logger.debug("RecId: "+pId);
+
+    Record record = null;
+    try {
+      // Get record from MedRec.
+      RecordWS recordWS = port.getRecord(pId.intValue());
+
+      logger.debug("Got record from MedRec.");
+      // Transform object to internal value object.
+      record = PhysicianClientUtils.toRecord(recordWS);
+    }
+    catch(SOAPFaultException sfe) {
+      logger.error(sfe.getFaultString(), sfe);
+      throw new EJBException(sfe);
+    }
+    catch(Exception e) {
+      logger.error(e.getMessage(), e);
+      throw new EJBException(e);
+    }
+
+    return record;
+  }
+
+      //  G E T   M E D I C A L   R E C O R D   S U M M A R Y
+  /**
+  * <p>Accesses MedRec Web service retrieving  all medical record summary.
+  * This includes a collection of abbreviated records, and
+  * a collection of current and recent prescriptions.</p>
+  *
+  * @param pId    Id of the record.
+  *
+  * @return RecordsSummary
+  *
+  * @exception RemoteException
+  *
+  * EJBGen tags:
+  * @ejbgen:remote-method
+  */
+  public RecordsSummary getRecordsSummary(Integer pId)
+    throws RemoteException
+  {
+    logger.info("Getting records summary.");
+    logger.debug("PatId: "+pId.toString());
+
+    RecordsSummary recSummary = null;
+    try {
+      // Get record summary from MedRec.
+      RecordsSummaryWS recSumWS = port.getRecordsSummary(pId.intValue());
+
+      logger.debug("Got record summary from MedRec.");
+      // Transform object to internal value object.
+      recSummary = PhysicianClientUtils.toRecordsSummary(recSumWS);
+    }
+    catch(SOAPFaultException sfe) {
+      logger.error(sfe.getFaultString(), sfe);
+      throw new EJBException(sfe);
+    }
+    catch(Exception e) {
+      logger.error(e.getMessage(), e);
+      throw new EJBException(e);
+    }
+
+    return recSummary;
+  }
+
+         //  S E A R C H   P A T I E N T
+  /**
+  * <p>Find patient by id.</p>
+  *
+  * @param pSearch   Patient Id
+  *
+  * @return Patient  Patient value object.
+  *
+  * @exception RemoteException
+  *
+  * EJBGen tags:
+  * @ejbgen:remote-method
+  */
+  public Collection searchPatients(Search pSearch) throws RemoteException
+  {
+    Collection patientCol = null;
+
+    if (!MedRecUtils.isEmpty(pSearch.getLastName()))
+      patientCol = searchPatientsByLastNameWild(pSearch.getLastName());
+    else if (!MedRecUtils.isEmpty(pSearch.getSsn()))
+      patientCol = searchPatientsBySSN(pSearch.getSsn());
+    else
+      patientCol = new ArrayList();
+
+    return patientCol;
+  }
+
+           //  S E A R C H   P A T I E N T
+  /**
+  * <p>Find patient by id.</p>
+  *
+  * @param pSearchString   Wild card search last name
+  *
+  * @return Patient  Patient value object.
+  *
+  * @exception RemoteException
+  *
+  * EJBGen tags:
+  * @ejbgen:remote-method
+  */
+  public Collection searchPatientsByLastNameWild(String pSearchString)
+    throws RemoteException
+  {
+    logger.info("By wildcard last name.");
+    logger.debug("Last name: "+pSearchString);
+
+    // Declare local variables.
+    Collection patientCol = null;
+    PatientWS[] patients = null;
+
+    try {
+      // Get patients from MedRec.
+      patients = port.findPatientByLastNameWild(pSearchString);
+      logger.debug("Got patients from MedRec.");
+
+      // Transform array to internal collection.
+      patientCol = PhysicianClientUtils.toPatientCollection(patients);
+      logger.debug("Num of results: "+patientCol.size());
+    }
+    catch(SOAPFaultException sfe) {
+      logger.error(sfe.getFaultString(), sfe);
+      throw new EJBException(sfe);
+    }
+    catch(Exception e) {
+      logger.error(e.getMessage(), e);
+      throw new EJBException(e);
+    }
+
+    return patientCol;
+  }
+
+         //  S E A R C H   P A T I E N T   B Y   S S N
+  /**
+  * <p>Find patient by id.</p>
+  *
+  * @param pSsn   Patient SSN
+  *
+  * @return Collection  Collection of one patient value objects.
+  *
+  * @exception RemoteException
+  *
+  * EJBGen tags:
+  * @ejbgen:remote-method
+  */
+  public Collection searchPatientsBySSN(String pSsn) throws RemoteException
+  {
+    logger.info("Search for MedRec patients by ssn.");
+    logger.debug("Ssn: "+pSsn);
+
+    // Declare local variables.
+    Collection patientCol = null;
+    PatientWS patient = null;
+
+    try {
+      patient = port.findPatientBySsn(pSsn);
+      logger.debug("Got patient from MedRec.");
+
+      // Transform patient to collection of internal value objects.
+      patientCol = PhysicianClientUtils.toPatientCollection(patient);
+    }
+    catch(SOAPFaultException sfe) {
+      logger.error(sfe.getFaultString(), sfe);
+      throw new EJBException(sfe);
+    }
+    catch(Exception e) {
+      logger.error(e.getMessage(), e);
+      throw new EJBException(e);
+    }
+
+    return patientCol;
+  }
+
+  // Private methods
+ /**
+  * <p>Get web service port.</p>
+  */
+  private MedRecWebServicesPort getMedRecWebServicesPort()
+    throws RemoteException, SOAPFaultException, Exception
+  {
+    logger.info("Looking up web service.");
+
+    // Declare local variables
+    MedRecWebServicesPort port = null;
+    String wsdl_url = null;
+
+    try {
+      wsdl_url = System.getProperty("phys.app.wsdl.url");
+      logger.debug("Wsdl url: "+wsdl_url);
+      MedRecWebServices service = new MedRecWebServices_Impl(wsdl_url);
+      port = service.getMedRecWebServicesPort();
+    }
+    catch(SOAPFaultException sfe) {
+      logger.error(sfe.getFaultString(), sfe);
+      throw sfe;
+    }
+    catch(Exception e) {
+      logger.error(e.getMessage(), e);
+      throw e;
+    }
+
+    return port;
+  }
+}

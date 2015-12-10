@@ -1,0 +1,63 @@
+package com.bea.medrec.xml;
+
+import javax.jms.*;
+import org.apache.log4j.Logger;
+import weblogic.ejb.GenericMessageDrivenBean;
+
+/**
+ * <p>Handles the flow of incoming xml processing.</p>
+ *
+ * @author Copyright (c) 1999-2004 by BEA Systems, Inc. All Rights Reserved.
+ *
+ * EJBGen tags:
+ * Note: Recommend initial-beans-in-free-pool == max-beans-in-free-pool
+ * for production system.
+ * @ejbgen:message-driven
+ *   ejb-name = XMLUploadEJB
+ *   destination-jndi-name = jms/XML_UPLOAD_MDB_QUEUE
+ *   destination-type = javax.jms.Queue
+ *   initial-beans-in-free-pool = 0
+ *   max-beans-in-free-pool = 10
+ *   default-transaction = Required
+ *
+ * @ejbgen:ejb-ref
+ *   name = ejb/adminsession
+ *   home = com.bea.medrec.controller.AdminSessionHome
+ *   remote = com.bea.medrec.controller.AdminSession
+ *   type = Session
+ *   link = AdminSessionEJB
+ *   jndi-name = AdminSessionEJB.AdminSessionHome
+ */
+public class XMLUploadEJB
+  extends GenericMessageDrivenBean implements MessageListener {
+
+  private static Logger logger = Logger.getLogger(XMLUploadEJB.class.getName());
+
+ /**
+  * <p>Receives filename of XML to be processes.</p>
+  */
+  public void onMessage(Message msg)
+  {
+    logger.debug("Message from xml upload queue: "+msg);
+    ObjectMessage message = (javax.jms.ObjectMessage)msg;
+    String filename = null;
+    MedRecXMLProcessor xmlProcessor = null;
+
+    try {
+      filename = (String)message.getObject();
+      // Get XML processor, then all pending xml files.
+      xmlProcessor = MedRecXMLProcessor.getInstance();
+      // Pass xml file to be presisted.
+      xmlProcessor.saveXMLRecord(filename);
+    }
+    catch (JMSException jmsex) {
+      logger.error("Unable to upload the following file: "+filename, jmsex);
+      getMessageDrivenContext().setRollbackOnly();
+    }
+    catch (Exception ex) {
+      logger.error("Unable to upload the following file: "+filename, ex);
+    }
+  }
+}
+
+

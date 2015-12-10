@@ -1,0 +1,223 @@
+package com.bea.medrec.entities;
+
+import com.bea.medrec.value.Address;
+import javax.ejb.CreateException;
+import weblogic.ejb.GenericEntityBean;
+
+/**
+ * <p>AddressEJB is an Container Managed EntityBean that
+ * manipulates address persisted data.</p>
+ *
+ * @author Copyright (c) 2004 by BEA Systems. All Rights Reserved.
+ *
+ * EJBGen tags:
+ * @ejbgen:jndi-name
+ *
+ * @ejbgen:automatic-key-generation
+ *   name = ADDRESS_SEQ
+ *   type = NAMED_SEQUENCE_TABLE
+ *   cache-size = 10
+ *
+ * @ejbgen:create-default-dbms-tables
+ *   value = Disabled
+ *
+ * @ejbgen:entity
+ *   max-beans-in-cache = 1000
+ *   data-source-name = MedRecTxDataSource
+ *   trans-timeout-seconds = 0
+ *   ejb-name = AddressEJB
+ *   reentrant = False
+ *   concurrency-strategy = Database
+ *   delay-database-insert-until = ejbPostCreate
+ *   table-name = address
+ *   read-timeout-seconds = 600
+ *   prim-key-class = java.lang.Integer
+ *   default-transaction = Required
+ *
+ * @ejbgen:relation
+ *   cascade-delete = false
+ *   name = Patient-Address
+ *   multiplicity = one
+ *   target-ejb = PatientEJB
+ *
+ * @ejbgen:relation
+ *   cascade-delete = false
+ *   name = Physician-Address
+ *   multiplicity = one
+ *   target-ejb = PhysicianEJB
+ *
+ * @ejbgen:file-generation
+ *   local-class = true
+ *   local-home = true
+ *   value-class = False
+ */
+public abstract class AddressEJB extends GenericEntityBean {
+
+      // Local methods
+  // Container managed fields
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmp-field
+  *   column = id
+  *
+  * @ejbgen:primkey-field
+  *
+  * @ejbgen:local-method
+  */
+  public abstract Integer getId();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setId(Integer id);
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmp-field
+  *   column = street1
+  *
+  * @ejbgen:local-method
+  */
+  public abstract String getStreetName1();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setStreetName1(String streetName1);
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmp-field
+  *   column = street2
+  *
+  * @ejbgen:local-method
+  */
+  public abstract String getStreetName2();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setStreetName2(String streetName2);
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmp-field
+  *   column = city
+  *
+  * @ejbgen:local-method
+  */
+  public abstract String getCity();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setCity(String city);
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmp-field
+  *   column = state
+  *
+  * @ejbgen:local-method
+  */
+  public abstract String getState();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setState(String state);
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmp-field
+  *   column = zip
+  *
+  * @ejbgen:local-method
+  */
+  public abstract String getZipCode();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setZipCode(String zipCode);
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmp-field
+  *   column = country
+  *
+  * @ejbgen:local-method
+  */
+  public abstract String getCountry();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setCountry(String country);
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public Address getAddress()
+  {
+    Address address = new Address();
+    address.setId(getId());
+    address.setStreetName1(getStreetName1());
+    address.setStreetName2(getStreetName2());
+    address.setCity(getCity());
+    address.setState(getState());
+    address.setZipCode(getZipCode());
+    address.setCountry(getCountry());
+    return address;
+  }
+
+      // Home methods
+ /**
+  * <p>Address create.</p>
+  */
+  public Object ejbCreate(Address address)
+    throws CreateException
+  {
+    setStreetName1(address.getStreetName1());
+    setStreetName2(address.getStreetName2());
+    setCity(address.getCity());
+    setState(address.getState());
+    setZipCode(address.getZipCode());
+    setCountry(address.getCountry());
+
+    return null;
+  }
+
+  public void ejbPostCreate(Address address)
+    throws CreateException
+  { /* not implemented */ }
+
+ /**
+  * <p>Address create.</p>
+  */
+  public Object ejbCreate(String streetName1, String streetName2, String city,
+                          String state, String zipCode, String country)
+    throws CreateException
+  {
+      setStreetName1(streetName1);
+      setStreetName2(streetName2);
+      setCity(city);
+      setState(state);
+      setZipCode(zipCode);
+      setCountry(country);
+      return null;
+  }
+
+  public void ejbPostCreate(String streetName1, String streetName2, String city,
+                            String state, String zipCode, String country)
+    throws CreateException
+  { /* not implemented */ }
+}

@@ -1,0 +1,48 @@
+<project name="webapp" default="all" basedir=".">
+
+  <!-- set global properties for this build -->
+  <property environment="env"/>
+  <property file="../../medrec.properties"/>
+  <property name="build.compiler" value="${compiler}"/>
+
+  <property name="source" value="."/>
+  <property name="commonweb.build" value="${build.tmp}"/>
+
+  <!--  -->
+  <target name="all" depends="banner,
+                                build, jar"/>
+
+  <!--  -->
+  <target name="banner">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <echo message="####   S T A R T   C O M M O N   W E B A P P   ####"/>
+    <mkdir dir="${commonweb.build}"/>
+  </target>
+
+  <target name="build">
+      <javac srcdir="${source}" destdir="${commonweb.build}"
+         includes="**/*.java"
+         classpath="${value.classpath};${log.classpath};${struts.classpath};${utils.classpath};${exceptions.classpath}"
+         deprecation="${deprecation}"
+         debug="${debug}"
+         />
+  </target>
+
+  <target name="jar">
+    <jar jarfile="${common.web.classpath}"
+      basedir="${commonweb.build}"
+      update="yes">
+    </jar>
+    <ant target="clean.build"/>
+  </target>
+
+  <target name="clean.build">
+    <delete dir="${commonweb.build}"/>
+  </target>
+
+  <target name="clean" depends="clean.build">
+    <delete dir="${commonweb.classpath}"/>
+  </target>
+
+</project>

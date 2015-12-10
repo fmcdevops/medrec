@@ -1,0 +1,92 @@
+package com.bea.medrec.mail;
+
+import com.bea.medrec.utils.JNDINames;
+import com.bea.medrec.value.Mail;
+import javax.jms.JMSException;
+import javax.jms.MessageListener;
+import javax.jms.ObjectMessage;
+import javax.mail.MessagingException;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import org.apache.log4j.Logger;
+import weblogic.ejb.GenericMessageDrivenBean;
+
+/**
+ * <p>Handles the flow of outgoing mail messages.</p>
+ *
+ * @author Copyright (c) 2004 by BEA Systems. All Rights Reserved.
+ *
+ * EJBGen tags:
+ * Note: Recommend initial-beans-in-free-pool == max-beans-in-free-pool
+ * for production system.
+ * @ejbgen:message-driven
+ *   ejb-name = MailBean
+ *   destination-jndi-name = jms/MAIL_MDB_QUEUE
+ *   destination-type = javax.jms.Queue
+ *   initial-beans-in-free-pool = 0
+ *   max-beans-in-free-pool = 10
+ *   default-transaction = Required
+ *
+ * @ejbgen:env-entry
+ *   name = sendmailflag
+ *   type = java.lang.Boolean
+ *   value = false
+ */
+public class MailEJB
+  extends GenericMessageDrivenBean implements MessageListener {
+
+  private static Logger logger =Logger.getLogger(MailEJB.class.getName());
+  private boolean mailEnabled = false;
+  private javax.mail.Session session = null;
+  
+  public void setMessageDrivenContext() {
+
+    try {
+      InitialContext ic = new InitialContext();    
+      session = (javax.mail.Session)ic.lookup(JNDINames.MAIL_SESSION);
+      Boolean sendMailBoolean = (Boolean)ic.lookup("sendmailflag");
+      if (sendMailBoolean != null) mailEnabled = sendMailBoolean.booleanValue();
+
+    } catch (NamingException ne) {
+      logger.debug(ne);
+    }
+  }
+
+  public void onMessage(javax.jms.Message msg) {
+    logger.debug("Message from mail queue: " + msg);
+
+    ObjectMessage message = (ObjectMessage)msg;
+    Mail mail = null;
+    try {
+      mail = (Mail)message.getObject();
+    } catch (JMSException je) {
+      logger.error("Unable to obtain mail message from queue");
+      getMessageDrivenContext().setRollbackOnly();
+    }
+
+    if (mail != null && mailEnabled) {
+      try {
+        javax.mail.Message mailMessage = new MimeMessage(session);
+        mailMessage.setFrom(new InternetAddress(mail.getFrom()));
+        mailMessage.setRecipient(javax.mail.Message.RecipientType.TO,
+            new InternetAddress(mail.getTo()));
+        mailMessage.setSubject(mail.getSubject());
+        mailMessage.setContent(mail.getMessage(), "text/html");
+        mailMessage.setSentDate(new java.util.Date());
+        Transport.send(mailMessage);
+      } catch (MessagingException me) {
+        logger.info(me);
+        getMessageDrivenContext().setRollbackOnly();
+      }
+      catch (Exception ex) {
+        logger.error("Unable to mail: \n"+mail.toString(), ex);
+      }
+    } else {
+      logger.info("Mail turned OFF. Please edit 'sendmailflag' "
+          +"in MailEJB.ejb to enable.");
+    }
+  }
+}

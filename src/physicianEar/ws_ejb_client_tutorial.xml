@@ -1,0 +1,12 @@
+<project name="EJB Web Service Invoke" default="build.ws.client">
+
+  <target name="build.ws.client">
+    <clientgen
+      wsdl="http://127.0.0.1:7101/ws_medrec/MedRecWebServices?WSDL"
+      packageName="com.bea.medrec.webservices"
+      keepGenerated="false"
+      clientjar="c:/medrec_tutorial/build/physicianEar/APP-INF/lib/webServicesEjb_client.jar" />
+
+  </target>
+
+</project>

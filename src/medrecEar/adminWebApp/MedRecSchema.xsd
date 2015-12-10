@@ -1,0 +1,129 @@
+<!-- edited with XMLSPY v5 U (http://www.xmlspy.com) by C (BEA) -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<xsd:annotation>
+		<xsd:documentation xml:lang="en">
+      Schema for MedRec
+      Copyright 2004 BEA Systems. All rights reserved.
+    </xsd:documentation>
+	</xsd:annotation>
+	<xsd:element name="medicalRecords" type="MedicalRecordType"/>
+	<xsd:complexType name="MedicalRecordType">
+		<xsd:sequence>
+			<xsd:element name="medicalVisit" type="MedicalVisitType" maxOccurs="unbounded"/>
+		</xsd:sequence>
+		<xsd:attribute name="srcId" type="xsd:string"/>
+		<xsd:attribute name="srcName" type="xsd:string"/>
+        <xsd:attribute name="date" type="xsd:date"/>
+	</xsd:complexType>
+	<xsd:complexType name="MedicalVisitType">
+		<xsd:sequence>
+			<xsd:element name="patient" type="PatientInfoType"/>
+			<xsd:element name="record" type="RecordType" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="PatientInfoType">
+		<xsd:sequence>
+			<xsd:element name="ssn" type="xsd:string"/>
+			<xsd:element name="patientName" type="PatientNameType"/>
+			<xsd:element name="dob" type="xsd:date"/>
+			<xsd:element name="gender" type="Gender"/>
+			<xsd:element name="phone" type="xsd:string"/>
+			<xsd:element name="email" type="xsd:string"/>
+			<xsd:element name="address" type="AddressType"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="PatientNameType">
+		<xsd:sequence>
+			<xsd:element name="firstName" type="xsd:string"/>
+			<xsd:element name="middleName" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="lastName" type="xsd:string"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:simpleType name="Gender">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="male"/>
+			<xsd:enumeration value="female"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="AddressType">
+		<xsd:sequence>
+			<xsd:element name="streetName1" type="xsd:string"/>
+			<xsd:element name="streetName2" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="city" type="xsd:string"/>
+			<xsd:element name="state" type="xsd:string"/>
+			<xsd:element name="zip" type="xsd:string"/>
+			<xsd:element name="country" type="xsd:string"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="RecordType">
+		<xsd:sequence>
+			<xsd:element name="date" type="xsd:date"/>
+			<xsd:element name="symptoms" type="xsd:string"/>
+			<xsd:element name="diagnosis" type="xsd:string"/>
+			<xsd:element name="notes" type="xsd:string"/>
+			<xsd:element name="vitalSigns" type="VitalSignsType"/>
+			<xsd:element name="rx" type="RxType" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="VitalSignsType">
+		<xsd:sequence>
+			<xsd:element name="weight" type="WeightType"/>
+			<xsd:element name="height" type="HeightType"/>
+			<xsd:element name="temperature" type="TemperatureType"/>
+			<xsd:element name="bloodPressure" type="BloodPressureType"/>
+			<xsd:element name="pulse" type="xsd:positiveInteger"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="WeightType">
+		<xsd:sequence>
+			<xsd:element name="amount" type="xsd:positiveInteger"/>
+			<xsd:element name="uom" type="WeightUOM"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="HeightType">
+		<xsd:sequence>
+			<xsd:element name="amount" type="xsd:positiveInteger"/>
+			<xsd:element name="uom" type="HeightUOM"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="TemperatureType">
+		<xsd:sequence>
+			<xsd:element name="amount" type="xsd:float"/>
+			<xsd:element name="uom" type="TemperatureUOM"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="BloodPressureType">
+		<xsd:sequence>
+			<xsd:element name="systolic" type="xsd:positiveInteger"/>
+			<xsd:element name="diastolic" type="xsd:positiveInteger"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:simpleType name="WeightUOM">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="pounds"/>
+			<xsd:enumeration value="kilograms"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="HeightUOM">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="inches"/>
+			<xsd:enumeration value="centimeters"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="TemperatureUOM">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="fahrenheit"/>
+			<xsd:enumeration value="centigrade"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="RxType">
+		<xsd:sequence>
+            <xsd:element name="date" type="xsd:date"/>
+			<xsd:element name="drug" type="xsd:string"/>
+			<xsd:element name="dosage" type="xsd:string"/>
+			<xsd:element name="frequency" type="xsd:string"/>
+			<xsd:element name="refills" type="xsd:positiveInteger"/>
+			<xsd:element name="instructions" type="xsd:string"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

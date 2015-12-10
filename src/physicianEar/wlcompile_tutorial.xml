@@ -1,0 +1,7 @@
+<project name="wlcompile_tutorial" default="build">
+
+  <target name="build">
+    <wlcompile srcdir="c:/medrec_tutorial/src/physicianEar" destdir="c:/medrec_tutorial/build/physicianEar"/>
+  </target>
+
+</project>

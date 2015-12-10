@@ -1,0 +1,191 @@
+package com.bea.medrec.entities;
+
+import com.bea.medrec.value.Patient;
+import com.bea.medrec.value.User;
+import javax.ejb.CreateException;
+import weblogic.ejb.GenericEntityBean;
+
+/**
+ * <p>UserEJB is a Container Managed EntityBean that
+ * manipulates user persisted data.</p>
+ *
+ * @author Copyright (c) 2004 by BEA Systems. All Rights Reserved.
+ *
+ * EJBGen tags:
+ * @ejbgen:jndi-name
+ *
+  * @ejbgen:create-default-dbms-tables
+ *   value = Disabled
+ *
+ * @ejbgen:entity
+ *   max-beans-in-cache = 1000
+ *   data-source-name = MedRecTxDataSource
+ *   trans-timeout-seconds = 0
+ *   ejb-name = UserEJB
+ *   reentrant = False
+ *   concurrency-strategy = Database
+ *   delay-database-insert-until = ejbPostCreate
+ *   table-name = medrec_user
+ *   read-timeout-seconds = 600
+ *   prim-key-class = java.lang.String
+ *   default-transaction = Required
+ *   abstract-schema-name = UserEJB
+ *
+ * @ejbgen:ejb-local-ref
+ *   name = ejb/local/patient
+ *   home = com.bea.medrec.entities.PatientLocalHome
+ *   local = com.bea.medrec.entities.PatientLocal
+ *   type = Entity
+ *   link = PatientEJB
+ *
+ * @ejbgen:relation
+ *   cascade-delete = false
+ *   cmr-field = patient
+ *   name = User-Patient
+ *   multiplicity = one
+ *   target-ejb = PatientEJB
+ *
+ * @ejbgen:finder
+ *   signature = "java.util.Collection findByStatus(java.lang.String n0)"
+ *   ejb-ql = "SELECT OBJECT(o) FROM UserEJB AS o WHERE o.status = ?1"
+ *
+ * @ejbgen:finder
+ *   signature = "com.bea.medrec.entities.UserLocal findByUsernamePassword(java.lang.String n0, java.lang.String n1)"
+ *   ejb-ql = "SELECT OBJECT(o) FROM UserEJB AS o
+ *                 WHERE o.username = ?1 and o.password = ?2"
+ *
+ * @ejbgen:finder
+ *   signature = "com.bea.medrec.entities.UserLocal findByUsername(java.lang.String n0)"
+ *   ejb-ql = "SELECT OBJECT(o) FROM UserEJB AS o WHERE o.username = ?1"
+ *
+ * @ejbgen:file-generation
+ *   local-class = True
+ *   local-home = True
+ *   value-class = False
+ */
+public abstract class UserEJB extends GenericEntityBean {
+
+      // Local methods
+  // Container managed fields
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmp-field
+  *   column = username
+  *
+  * @ejbgen:primkey-field
+  *
+  * @ejbgen:local-method
+  */
+  public abstract String getUsername();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setUsername(String email);
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmp-field
+  *   column = password
+  *
+  * @ejbgen:local-method
+  */
+  public abstract String getPassword();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setPassword(String password);
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmp-field
+  *   column = status
+  *
+  * @ejbgen:local-method
+  */
+  public abstract String getStatus();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setStatus(String status);
+
+    // Container manager methods
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmr-field
+  *
+  * @ejbgen:local-method
+  */
+  public abstract PatientLocal getPatient();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setPatient(PatientLocal patient);
+
+ /**
+  * <p>Returns associated patient object.</p>
+  *
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public Patient getPatientObj() { return getPatient().getPatientLite(); }
+
+ /**
+  * <p>Returns a value object representation of the bean.</p>
+  *
+  * @return User
+  *
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public User getUser()
+  {
+    User user = new User();
+    user.setUsername(getUsername());
+    user.setPassword(getPassword());
+    user.setStatus(getStatus());
+    return user;
+  }
+
+    // Home methods
+ /**
+  * <p>User create.</p>
+  */
+  public Object ejbCreate(String pUsername,
+                          String pPassword,
+                          String pStatus)
+    throws CreateException
+  {
+    setUsername(pUsername);
+    setPassword(pPassword);
+    setStatus(pStatus);
+    return null;
+  }
+
+  public void ejbPostCreate(String pUsername,
+                            String pPassword,
+                            String pStatus)
+    throws CreateException
+  { /* not implemented */ }
+
+ /**
+  * <p>User methods.</p>
+  */
+  public Object ejbCreate(User user) throws CreateException {
+    setUsername(user.getUsername());
+    setPassword(user.getPassword());
+    setStatus(user.getStatus());
+    return null;
+  }
+
+  public void ejbPostCreate(User user)
+    throws CreateException
+  { /* not implemented */ }
+}

@@ -1,0 +1,89 @@
+<project name="startup ear" default="build">
+
+  <property environment="env" />
+
+  <property file="../medrec.properties"/>
+
+  <property name="build.compiler" value="${compiler}" />
+
+  <!-- this is the src directory out of which when combined with
+       the build directory is a wls formatted ear -->
+  <property name="srcdir" value="." />
+
+  <!-- this is the build directory for the wls formatted ear -->
+  <property name="dest.dir" value="${startup.ear.wlcompile.build.dir}" />
+
+  <!-- This is an archived J2EE formatted ear, combining
+       the build and src elements of the medrec ear -->
+  <property name="ear.file" value="${startup.ear.file}" />
+
+  <!-- This is an exploded J2EE formatted ear, combining
+       the build and src elements of the medrec ear -->
+  <property name="ear.exploded.dir" value="${startup.ear.exploded.dir}" />
+
+  <!-- these all apply to the src and build directory for wls formatted ear -->
+  <property name="app-inf.dest.classes" value="${dest.dir}/APP-INF/classes"/>
+  <property name="app-inf.dest.lib" value="${dest.dir}/APP-INF/lib"/>
+
+  <!-- user name and pass of WLS Server  -->
+  <property name="username" value="weblogic" />
+  <property name="password" value="weblogic" />
+
+  <target name="banner">
+    <echo>+---------------------------------------+</echo>
+    <echo>+        Building Startup Ear           +</echo>
+    <echo>+---------------------------------------+</echo>
+  </target>
+
+  <target name="all" depends="clean, build" />
+  <target name="stage" depends="clean, build, exploded.ear" />
+
+  <target name="prepare">
+    <!--Setup the directories for the ear level -->
+    <mkdir dir="${app-inf.dest.classes}"/>
+    <mkdir dir="${app-inf.dest.lib}"/>
+  </target>
+  
+  <!-- builds entire application -->
+  <target name="build" depends="banner">
+    <wlcompile srcdir="${srcdir}" destdir="${dest.dir}"/>
+    <wlappc source="${dest.dir}" />
+  </target>
+
+  <!-- package the application as J2EE formatted archived .ear -->
+  <target name="ear">
+    <wlpackage srcdir="${srcdir}" destdir="${dest.dir}"
+               toFile="${ear.file}" />
+  </target>
+
+  <!-- package the application a J2EE formatted exploded ear -->
+  <target name="exploded.ear">
+    <wlpackage srcdir="${srcdir}" destdir="${dest.dir}"
+               toDir="${ear.exploded.dir}" />
+  </target>
+  
+  <!-- deploys entire application -->
+  <target name="deploy.startup.ear" description="Deploy build/startup to WebLogic on localhost:${port}.">
+    <!-- "url" is not required, but the default url is iiop://localhost:${port} -->
+    <wldeploy user="${wls.username}" password="${wls.password}" adminurl="t3://localhost:${port}"
+      action="deploy" name="StartupEAR" source="${dest.dir}" />
+  </target>
+
+  <target name="clean" depends="clean.ear,clean.exploded.ear,clean.prepare">
+    <delete dir="${dest.dir}" />
+  </target>
+  
+  <target name="clean.ear">
+    <delete file="${ear.file}"/>
+  </target>
+
+  <target name="clean.exploded.ear">
+    <delete dir="${ear.exploded.dir}"/>
+  </target>
+
+  <target name="clean.prepare">
+    <delete dir="${app-inf.dest.classes}"/>
+    <delete dir="${app-inf.dest.lib}"/>
+  </target>
+
+</project>

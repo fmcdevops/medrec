@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<medicalRecords
+  srcId="105"
+  srcName="St. Johns Medical Center"
+  date="2002-10-09"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="http://localhost:@LISTEN_PORT/admin/MedRecSchema.xsd">
+	<medicalVisit>
+		<patient>
+			<ssn>453219821</ssn>
+			<patientName>
+				<firstName>Greg</firstName>
+				<middleName>Rufus</middleName>
+				<lastName>Jones</lastName>
+			</patientName>
+			<dob>1971-07-23</dob>
+			<gender>male</gender>
+			<phone>415-342-1241</phone>
+			<email>jones@fsu.edu</email>
+			<address>
+				<streetName1>312 Main St.</streetName1>
+				<streetName2>Apt 3</streetName2>
+				<city>Daly City</city>
+				<state>CA</state>
+				<zip>31312</zip>
+				<country>USA</country>
+			</address>
+		</patient>
+		<record>
+			<date>1999-05-23</date>
+			<symptoms>Tender area around mid-chest.</symptoms>
+			<diagnosis>Broken rib on left side.</diagnosis>
+			<notes>Notes go here.</notes>
+			<vitalSigns>
+				<weight>
+					<amount>185</amount>
+					<uom>pounds</uom>
+				</weight>
+				<height>
+					<amount>71</amount>
+					<uom>inches</uom>
+				</height>
+				<temperature>
+					<amount>98.7</amount>
+					<uom>fahrenheit</uom>
+				</temperature>
+				<bloodPressure>
+					<systolic>100</systolic>
+					<diastolic>72</diastolic>
+				</bloodPressure>
+				<pulse>75</pulse>
+			</vitalSigns>
+			<rx>
+        <date>1999-05-23</date>
+				<drug>Aspirin</drug>
+				<dosage>100 tablets</dosage>
+				<frequency>4 per day</frequency>
+				<refills>1</refills>
+				<instructions>No instructions.</instructions>
+			</rx>
+      <rx>
+        <date>1999-05-23</date>
+				<drug>Vicotin</drug>
+				<dosage>50 tablets</dosage>
+				<frequency>2 per day</frequency>
+				<refills>1</refills>
+				<instructions>Take with food.</instructions>
+			</rx>
+		</record>
+    <record>
+			<date>2001-11-03</date>
+			<symptoms>Low-grade fever; itchy sores.</symptoms>
+			<diagnosis>Chicken Pox</diagnosis>
+			<notes>Notes go here.</notes>
+			<vitalSigns>
+				<weight>
+					<amount>189</amount>
+					<uom>pounds</uom>
+				</weight>
+				<height>
+					<amount>71</amount>
+					<uom>inches</uom>
+				</height>
+				<temperature>
+					<amount>99.7</amount>
+					<uom>fahrenheit</uom>
+				</temperature>
+				<bloodPressure>
+					<systolic>100</systolic>
+					<diastolic>70</diastolic>
+				</bloodPressure>
+				<pulse>75</pulse>
+			</vitalSigns>
+			<rx>
+        <date>2001-11-03</date>
+				<drug>Codiene</drug>
+				<dosage>6 oz</dosage>
+				<frequency>2 per day</frequency>
+				<refills>1</refills>
+				<instructions>Take with milk.</instructions>
+			</rx>
+		</record>
+	</medicalVisit>
+</medicalRecords>

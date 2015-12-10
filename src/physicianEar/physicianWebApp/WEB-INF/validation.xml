@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!DOCTYPE form-validation PUBLIC
+          "-//Apache Software Foundation//DTD Commons Validator Rules Configuration 1.0//EN"
+          "http://jakarta.apache.org/commons/dtds/validator_1_0.dtd">
+
+<form-validation>
+  <global>
+    <constant>
+      <constant-name>multi-word</constant-name>
+      <constant-value>[a-zA-Z\-.']</constant-value>
+    </constant>
+  </global>
+  <formset>
+    <form name="userBean">
+      <field property="username" depends="required, email">
+        <arg0 key="Username"/>
+      </field>
+      <field property="password"
+          depends="required, minlength, maxlength">
+        <arg0 key="Password"/>
+        <arg1 name="minlength" key="${var:minlength}" resource="false"/>
+        <arg1 name="maxlength" key="${var:maxlength}" resource="false"/>
+        <var>
+          <var-name>minlength</var-name>
+          <var-value>8</var-value>
+        </var>
+        <var>
+          <var-name>maxlength</var-name>
+          <var-value>10</var-value>
+        </var>
+      </field>
+    </form>
+    <form name="recordBean">
+      <field property="symptoms" depends="required, mask">
+        <arg0 key="VisitReason"/>
+        <var>
+          <var-name>mask</var-name>
+          <var-value>${multi-word}</var-value>
+        </var>
+      </field>
+      <field property="notes" depends="required, mask">
+        <arg0 key="ExamNotes"/>
+        <var>
+          <var-name>mask</var-name>
+          <var-value>${multi-word}</var-value>
+        </var>
+      </field>
+      <field property="diagnosis" depends="required, mask">
+        <arg0 key="Diagnosis"/>
+        <var>
+          <var-name>mask</var-name>
+          <var-value>${multi-word}</var-value>
+        </var>
+      </field>
+      <field property="vitalSignsBean.temperature"
+          depends="required, mask">
+        <arg0 key="Temperature"/>
+        <var>
+          <var-name>mask</var-name>
+          <var-value>\d{1,3}</var-value>
+        </var>
+      </field>
+      <field property="vitalSignsBean.weight"
+          depends="required, mask">
+        <arg0 key="Weight"/>
+        <var>
+          <var-name>mask</var-name>
+          <var-value>\d{2,3}</var-value>
+        </var>
+      </field>
+      <field property="vitalSignsBean.pulse"
+          depends="required, mask">
+        <arg0 key="Pulse"/>
+        <var>
+          <var-name>mask</var-name>
+          <var-value>\d{2,3}</var-value>
+        </var>
+      </field>
+      <field property="vitalSignsBean.height"
+          depends="required, mask">
+        <arg0 key="Height"/>
+        <var>
+          <var-name>mask</var-name>
+          <var-value>\d{2,3}</var-value>
+        </var>
+      </field>
+      <field property="vitalSignsBean.bloodPressure"
+          depends="required, mask">
+        <arg0 key="BloodPressure"/>
+        <var>
+          <var-name>mask</var-name>
+          <var-value>\d{2,3}\/\d{2,3}</var-value>
+        </var>
+      </field>
+    </form>
+    <form name="prescriptionBean">
+      <field property="drug" depends="required, mask">
+        <arg0 key="Medication"/>
+        <var>
+          <var-name>mask</var-name>
+          <var-value>${multi-word}</var-value>
+        </var>
+      </field>
+      <field property="dosage" depends="required, mask">
+        <arg0 key="Dosage"/>
+        <var>
+          <var-name>mask</var-name>
+          <var-value>${multi-word}</var-value>
+        </var>
+      </field>
+      <field property="frequency" depends="required, mask">
+        <arg0 key="Frequency"/>
+        <var>
+          <var-name>mask</var-name>
+          <var-value>${multi-word}</var-value>
+        </var>
+      </field>
+      <field property="refillsRemaining" depends="required, mask">
+        <arg0 key="Refills"/>
+        <var>
+          <var-name>mask</var-name>
+          <var-value>\d{1,3}</var-value>
+        </var>
+      </field>
+    </form>
+  </formset>
+</form-validation>

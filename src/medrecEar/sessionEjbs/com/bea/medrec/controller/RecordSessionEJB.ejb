@@ -1,0 +1,326 @@
+package com.bea.medrec.controller;
+
+import com.bea.medrec.value.Prescription;
+import com.bea.medrec.value.Record;
+import com.bea.medrec.value.RecordsSummary;
+import com.bea.medrec.entities.*;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import javax.ejb.CreateException;
+import javax.ejb.EJBException;
+import javax.ejb.FinderException;
+import javax.ejb.SessionContext;
+import javax.naming.NamingException;
+import org.apache.log4j.Logger;
+
+
+/**
+ * <p>Session facade for all MedRec medical record functionality.</p>
+ *
+ * @author Copyright (c) 2004 by BEA Systems. All Rights Reserved.
+ *
+ * EJBGen tags:
+ * @ejbgen:session
+ *   max-beans-in-free-pool = 1000
+ *   initial-beans-in-free-pool = 0
+ *   trans-timeout-seconds = 0
+ *   type = Stateless
+ *   default-transaction = Required
+ *   enable-call-by-reference = True
+ *   ejb-name = RecordSessionEJB
+ *
+ * @ejbgen:jndi-name
+ *   remote = RecordSessionEJB.RecordSessionHome
+ *
+ * @ejbgen:ejb-local-ref
+ *   name = ejb/local/prescription
+ *   home = com.bea.medrec.entities.PrescriptionLocalHome
+ *   local = com.bea.medrec.entities.PrescriptionLocal
+ *   type = Entity
+ *   link = PrescriptionEJB
+ *
+ * @ejbgen:ejb-local-ref
+ *   name = ejb/local/record
+ *   home = com.bea.medrec.entities.RecordLocalHome
+ *   local = com.bea.medrec.entities.RecordLocal
+ *   type = Entity
+ *   link = RecordEJB
+ *
+ * @ejbgen:file-generation
+ *   remote-class = True
+ *   remote-home = True
+ */
+public class RecordSessionEJB extends weblogic.ejb.GenericSessionBean {
+
+  private static Logger logger =
+    Logger.getLogger(RecordSessionEJB.class.getName());
+
+  private SessionContext ctx;
+  private RecordLocalHome recordHome;
+  private PrescriptionLocalHome rxHome;
+
+ /**
+  * <p>Sets the session context.  Get handles for all
+  * session and entity and JMS connections used throughout
+  * this session bean.</p>
+  *
+  * @param ctx  SessionContext Context for session
+  */
+  public void setSessionContext(SessionContext ctx)
+  {
+    this.ctx = ctx;
+    try {
+      // Entity bean homes.
+      recordHome = JNDILookupUtils.getRecordLocalHome();
+      rxHome = JNDILookupUtils.getRxLocalHome();
+    } catch(NamingException ne) {
+      throw new EJBException(ne);
+    }
+  }
+
+  // Public Methods
+
+      //  A D D   R E C O R D
+  /**
+  * <p>Adds a record, including vital signs and prescriptions, by
+  * calling the appropriate entity beans.</p>
+  *
+  * @param pRecord
+  *
+  * @exception RemoteException
+  *
+  * EJBGen tags:
+  * @ejbgen:remote-method
+  */
+  public void addRecord(Record pRecord)
+    throws NamingException, RemoteException, Exception
+  {
+    logger.debug("Adding record: " + pRecord.toString());
+
+    // Declare local variables.
+    RecordLocal rec = null;
+    Collection rxCol = null;
+
+    try {
+      rec = recordHome.create(pRecord);
+      rxCol = addRxs(pRecord.getPrescriptions(), rec);
+      rec.setPrescriptions(rxCol);
+    }
+    catch (CreateException ce) {
+      logger.error(ce);
+      throw new EJBException(ce);
+    }
+  }
+
+ /**
+  * <p>Add prescriptions.</p>
+  *
+  * @param  rXs  Collection of prescription
+  * @param  recordLocal  Record entity
+  *
+  * @return  Collection
+  *
+  * @exception   CreateException
+  * @exception   Exception
+  *
+  * EJBGen tags:
+  * @ejbgen:remote-method
+  */
+  private Collection addRxs(Collection rXs, RecordLocal recordLocal)
+    throws CreateException, Exception
+  {
+    // Declare local variables.
+    Collection col = null;
+    Iterator itr = null;
+    Prescription rx = null;
+
+    if (rXs != null) {
+      logger.debug("num of prescriptions: "+rXs.size());
+      itr = rXs.iterator();
+      col = new ArrayList();
+      while (itr.hasNext()) {
+        rx = (Prescription)itr.next();
+        col.add(rxHome.create(rx, recordLocal));
+      }
+    }
+    return col;
+  }
+
+      //  G E T   P R E S C R I P T I O N S
+  /**
+  * <p>Retrieves all prescriptions for a patient.</p>
+  *
+  * @param id    Id of the prescription.
+  *
+  * @return Collection  Collection of prescription value objects.
+  *
+  * @exception NamingException
+  * @exception RemoteException
+  * @exception Exception
+  *
+  * EJBGen tags:
+  * @ejbgen:remote-method
+  */
+  public Collection getPrescriptions(Integer id)
+    throws NamingException, RemoteException, Exception
+  {
+    // Declare local variables.
+    Collection rXs = null;
+
+    try {
+      rXs = toRxCollection(rxHome.findByPatientId(id));
+      //printCollection(prescriptions);
+    }
+    catch(FinderException fe) {
+      logger.warn(fe.getClass().getName()+" - "+fe.getMessage());
+    }
+    logger.debug("Num of Rxs: "+(rXs != null ? String.valueOf(rXs.size()) : "0"));
+    return rXs;
+  }
+
+      //  G E T   A L L   R E C O R D S   F O R   A   P A T I E N T
+  /**
+  * <p>Retrieves a records for a patient.  Records return are lite weight.</p>
+  *
+  * @param id    Id of the patient.
+  *
+  * @return Collection  Collection of lite record value objects.
+  *
+  * @exception NamingException
+  * @exception RemoteException
+  * @exception Exception
+  *
+  * EJBGen tags:
+  * @ejbgen:remote-method
+  */
+  public Collection getRecords(Integer id)
+    throws NamingException, RemoteException, Exception
+  {
+    // Declare local variables.
+    Collection records = null;
+
+    try {
+      records = toRecordCollection(recordHome.findByPatientId(id));
+    }
+    catch(FinderException fe) {
+      logger.warn(fe.getClass().getName()+" - "+fe.getMessage());
+    }
+    logger.debug("Num of Records: "+(records != null ? String.valueOf(records.size()) : "0"));
+    return records;
+  }
+
+      //  G E T   A   R E C O R D
+  /**
+  * <p>Retrieves all information for a visit given a record id.
+  * This includes vital signs, the record, and any prescriptions.</p>
+  *
+  * @param id    Id of the record.
+  *
+  * @return Collection  Collection of lite record value objects.
+  *
+  * @exception NamingException
+  * @exception RemoteException
+  * @exception Exception
+  *
+  * EJBGen tags:
+  * @ejbgen:remote-method
+  */
+  public Record getRecord(Integer id)
+    throws NamingException, RemoteException, Exception
+  {
+    logger.debug("Getting record: "+id);
+
+    // Declare local variables.
+    Record record = null;
+    RecordLocal recordLocal = null;
+
+    try {
+      recordLocal = recordHome.findByPrimaryKey(id);
+      record = recordLocal.getRecord();
+      logger.debug(record.toString());
+    }
+    catch(FinderException fe) {
+      logger.warn(fe.getClass().getName()+" - "+fe.getMessage());
+    }
+    return record;
+  }
+
+      //  G E T   R E C O R D S   S U M M A R Y
+  /**
+  * <p>Retrieves all medical record summary.
+  * This includes a collection of abbreviated records, and
+  * a collection of current and recent prescriptions.</p>
+  *
+  * @param id    Id of the record.
+  *
+  * @return RecordsSummary
+  *
+  * @exception NamingException
+  * @exception RemoteException
+  * @exception Exception
+  *
+  * EJBGen tags:
+  * @ejbgen:remote-method
+  */
+  public RecordsSummary getRecordsSummary(Integer id)
+    throws NamingException, RemoteException, Exception
+  {
+    logger.debug("Patient id: "+id.toString());
+    RecordsSummary recSummary = new RecordsSummary();
+    recSummary.setRecords(getRecords(id));
+    recSummary.setPrescriptions(getPrescriptions(id));
+    return recSummary;
+  }
+
+  // P R I V A T E   M E T H O D S
+
+ /**
+  * <p>Converts an entity bean collection to a collection
+  * of record value objects.</p>
+  */
+  private Collection toRecordCollection(Collection col)
+    throws Exception
+  {
+    // Declare local variables.
+    ArrayList records = new ArrayList();
+    Iterator itr = null;
+    RecordLocal recordLocal = null;
+    Record record = null;
+
+    if (col != null) {
+      itr = col.iterator();
+      while(itr.hasNext()) {
+        recordLocal = (RecordLocal)itr.next();
+        record = recordLocal.getRecordLite();
+        records.add(record);
+      }
+    }
+    return records;
+  }
+
+ /**
+  * <p>Converts an entity bean collection to a collection
+  * of prescription value objects.</p>
+  */
+  private Collection toRxCollection(Collection col)
+    throws Exception
+  {
+    // Declare local variables.
+    ArrayList prescriptions = new ArrayList();
+    Iterator itr = null;
+    PrescriptionLocal prescriptionLocal = null;
+    Prescription prescription = null;
+
+    if (col != null) {
+      itr = col.iterator();
+      while(itr.hasNext()) {
+        prescriptionLocal = (PrescriptionLocal)itr.next();
+        prescription = prescriptionLocal.getPrescription();
+        prescriptions.add(prescription);
+      }
+    }
+    return prescriptions;
+  }
+}

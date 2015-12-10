@@ -1,0 +1,49 @@
+<project name="value" default="all" basedir=".">
+
+  <!-- set global properties for this build -->
+  <property environment="env"/>
+  <property file="../../medrec.properties"/>
+  <property name="build.compiler" value="${compiler}"/>
+
+  <property name="exceptions.source" value="."/>
+  <property name="exceptions.build" value="${build.tmp}"/>
+
+  <target name="all" depends="build"/>
+
+  <target name="build" depends="clean, banner, compile, jar"/>
+
+  <target name="banner">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <echo message="####   S T A R T   C O M M O N   E X C E P T I O N S   ####"/>
+    <mkdir dir="${exceptions.build}"/>
+  </target>
+
+  <!-- Compile base value object -->
+  <target name="compile">
+    <javac srcdir="${exceptions.source}" destdir="${exceptions.build}"
+       includes="**/*.java"
+       classpath="${log.classpath}"
+       deprecation="${deprecation}"
+       debug="${debug}"
+       />
+  </target>
+
+  <!-- Make a standard jar file -->
+  <target name="jar">
+    <jar jarfile="${exceptions.classpath}"
+      basedir="${exceptions.build}"
+      update="yes">
+    </jar>
+    <ant target="clean.build"/>
+  </target>
+
+  <target name="clean.build">
+    <delete dir="${exceptions.build}"/>
+  </target>
+
+  <target name="clean" depends="clean.build">
+    <delete file="${exceptions.classpath}"/>
+  </target>
+
+</project>

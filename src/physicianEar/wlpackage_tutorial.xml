@@ -1,0 +1,8 @@
+<project name="wlpackage_tutorial" default="package">
+
+  <target name="package">
+    <wlpackage srcdir="c:/medrec_tutorial/src/physicianEar" destdir="c:/medrec_tutorial/build/physicianEar"
+               toFile="c:/medrec_tutorial/dist/wlpackage_tutorial.ear" />
+  </target>
+
+</project>

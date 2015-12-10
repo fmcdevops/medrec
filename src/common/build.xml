@@ -1,0 +1,40 @@
+<project name="common" default="build" basedir=".">
+
+  <!-- set global properties for this build -->
+  <property environment="env"/>
+  <property file="../medrec.properties"/>
+  <property name="build.compiler" value="${compiler}"/>
+
+  <target name="stage" depends="clean, exceptions, utils, value, web"/>
+  <target name="build" depends="exceptions, utils, value, web"/>
+
+  <target name="banner">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <echo message="####   S T A R T   C O M M O N   C O M P O N E N T S   ####"/>
+  </target>
+
+  <target name="exceptions">
+    <ant dir="./exceptions" antfile="build.xml"/>
+  </target>
+
+  <target name="utils">
+    <ant dir="./utils" antfile="build.xml"/>
+  </target>
+
+  <target name="value">
+    <ant dir="./value" antfile="build.xml"/>
+  </target>
+
+  <target name="web">
+    <ant dir="./web" antfile="build.xml"/>
+  </target>
+
+  <target name="clean">
+    <delete dir="${exceptions.classpath}"/>
+    <delete dir="${utils.classpath}"/>
+    <delete dir="${value.classpath}"/>
+    <delete dir="${common.web.classpath}"/>
+  </target>
+
+</project>

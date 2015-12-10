@@ -1,0 +1,46 @@
+<project name="utils" default="all" basedir=".">
+
+  <!-- set global properties for this build -->
+  <property environment="env"/>
+  <property file="../../medrec.properties"/>
+  <property name="build.compiler" value="${compiler}"/>
+  <property name="utils.source" value="."/>
+  <property name="utils.build" value="${build.tmp}"/>
+
+  <target name="all" depends="clean, banner, compile, jar"/>
+
+  <target name="banner">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <echo message="####   S T A R T   U T I L I T Y   C O M P O N E N T S   ####"/>
+    <mkdir dir="${build.tmp}"/>
+  </target>
+
+  <!-- Compile base value object -->
+  <target name="compile">
+    <javac srcdir="${utils.source}" destdir="${utils.build}"
+       includes="**/*.java"
+       classpath="${log.classpath}"
+       deprecation="${deprecation}"
+       debug="${debug}"
+       />
+  </target>
+
+  <!-- Make a standard jar file -->
+  <target name="jar">
+    <jar jarfile="${utils.classpath}"
+      basedir="${utils.build}"
+      update="yes">
+    </jar>
+    <ant target="clean.build"/>
+  </target>
+
+  <target name="clean.build">
+    <delete dir="${utils.build}"/>
+  </target>
+
+  <target name="clean" depends="clean.build">
+    <delete dir="${utils.classpath}"/>
+  </target>
+
+</project>

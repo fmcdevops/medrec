@@ -1,0 +1,351 @@
+package com.bea.medrec.entities;
+
+import com.bea.medrec.value.Address;
+import com.bea.medrec.value.Physician;
+import com.bea.medrec.utils.JNDINames;
+import com.bea.medrec.utils.ServiceLocator;
+import javax.ejb.CreateException;
+import javax.ejb.EJBException;
+import javax.ejb.EntityContext;
+import javax.naming.NamingException;
+import org.apache.log4j.Logger;
+import weblogic.ejb.GenericEntityBean;
+
+/**
+ * <p>PhysicianEJB is an Container Managed EntityBean that
+ * manipulates patient persisted data.</p>
+ *
+ * @author Copyright (c) 2004 by BEA Systems. All Rights Reserved.
+ *
+ * EJBGen tags:
+  * @ejbgen:jndi-name
+ *
+ * @ejbgen:automatic-key-generation
+ *   name = PHYSICIAN_SEQ
+ *   type = NAMED_SEQUENCE_TABLE
+ *   cache-size = 10
+ *
+ * @ejbgen:create-default-dbms-tables
+ *   value = Disabled
+ *
+ * @ejbgen:entity
+ *   max-beans-in-cache = 1000
+ *   data-source-name = MedRecTxDataSource
+ *   trans-timeout-seconds = 0
+ *   ejb-name = PhysicianEJB
+ *   reentrant = False
+ *   concurrency-strategy = Database
+ *   delay-database-insert-until = ejbPostCreate
+ *   table-name = physician
+ *   read-timeout-seconds = 600
+ *   prim-key-class = java.lang.Integer
+ *   default-transaction = Required
+ *   abstract-schema-name = PhysicianEJB
+ *
+ * @ejbgen:ejb-local-ref
+ *   name = ejb/local/address
+ *   home = com.bea.medrec.entities.AddressLocalHome
+ *   local = com.bea.medrec.entities.AddressLocal
+ *   type = Entity
+ *   link = AddressEJB
+ *
+ * @ejbgen:relation
+ *   cascade-delete = false
+ *   cmr-field = address
+ *   name = Physician-Address
+ *   multiplicity = many
+ *   target-ejb = AddressEJB
+ *   fk-column = address_id
+ *
+ * @ejbgen:finder
+ *   signature = "com.bea.medrec.entities.PhysicianLocal findByLastName(java.lang.String n0)"
+ *   ejb-ql = "SELECT OBJECT(o) FROM PhysicianEJB AS o WHERE o.lastName = ?1"
+ *
+ * @ejbgen:file-generation
+ *   local-class = True
+ *   local-home = True
+ *   value-class = False
+ */
+public abstract class PhysicianEJB extends GenericEntityBean
+{
+  // Logger
+  private static Logger logger =
+    Logger.getLogger(PhysicianEJB.class.getName());
+
+  // Attributes
+  private EntityContext ctx;
+  private AddressLocalHome addrHome;
+  private AddressLocal address;
+
+      // Local methods
+  // Container managed fields
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmp-field
+  *   column = id
+  *
+  * @ejbgen:primkey-field
+  *
+  * @ejbgen:local-method
+  */
+  public abstract Integer getId();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setId(Integer id);
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmp-field
+  *   column = first_name
+  *
+  * @ejbgen:local-method
+  */
+  public abstract String getFirstName();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setFirstName(String firstName);
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmp-field
+  *   column = middle_name
+  *
+  * @ejbgen:local-method
+  */
+  public abstract String getMiddleName();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setMiddleName(String middleName);
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmp-field
+  *   column = last_name
+  *
+  * @ejbgen:local-method
+  */
+  public abstract String getLastName();
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setLastName(String lastName);
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmp-field
+  *   column = phone
+  *
+  * @ejbgen:local-method
+  */
+  public abstract String getPhone();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setPhone(String phone);
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmp-field
+  *   column = email
+  *
+  * @ejbgen:local-method
+  */
+  public abstract String getEmail();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setEmail(String email);
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmp-field
+  *   column = address_id
+  *
+  * @ejbgen:local-method
+  */
+  public abstract Integer getAddressId();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setAddressId(Integer pAddressId);
+
+ /***
+  * Container managed relation fields
+  */
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:cmr-field
+  *
+  * @ejbgen:local-method
+  */
+  public abstract AddressLocal getAddress();
+
+ /**
+  * EJBGen tags:
+  * @ejbgen:local-method
+  */
+  public abstract void setAddress(AddressLocal val);
+
+  /**
+   * <p>Returns a value object representation of the bean.</p>
+   *
+   * @return Physician
+   *
+   * EJBGen tags:
+   * @ejbgen:local-method
+   */
+   public Physician getPhysician()
+   {
+     Physician physician = new Physician();
+     physician.setId(getId());
+     physician.setFirstName(getFirstName());
+     physician.setMiddleName(getMiddleName());
+     physician.setLastName(getLastName());
+     physician.setPhone(getPhone());
+     physician.setEmail(getEmail());
+     return physician;
+   }
+
+  /**
+   * <p>Returns an abbreviated value object representation of the bean.
+   *    Fields returned are:<br>
+   *      id<br>
+   *      first name<br>
+   *      middle name<br>
+   *      last name</p>
+   *
+   * @return Physician
+   *
+   * EJBGen tags:
+   * @ejbgen:local-method
+   */
+   public Physician getPhysicianLite()
+   {
+     Physician physician = new Physician();
+     physician.setId(getId());
+     physician.setFirstName(getFirstName());
+     physician.setMiddleName(getMiddleName());
+     physician.setLastName(getLastName());
+
+     return physician;
+   }
+
+      // Lifecycle methods
+ /**
+  * <p>Sets the entity context.  Get handles for all
+  * required entity beans.</p>
+  *
+  * @param ctx  EntityContext for entity
+  */
+  public void setEntityContext(EntityContext ctx)
+  {
+    this.ctx = ctx;
+    try {
+      // Entity bean homes.
+      addrHome = this.getAddressLocalHome();
+    } catch(NamingException ne) {
+      throw new EJBException(ne);
+    }
+  }
+
+      // Home methods
+ /**
+  * <p>Physician create.</p>
+  */
+  public Object ejbCreate(Physician patient)
+    throws NamingException, CreateException
+  {
+    setFirstName(patient.getFirstName());
+    setMiddleName(patient.getMiddleName());
+    setLastName(patient.getLastName());
+    setPhone(patient.getPhone());
+    setEmail(patient.getEmail());
+
+    return null;
+  }
+
+  public void ejbPostCreate(Physician patient)
+    throws NamingException, CreateException
+  {
+    try {
+      setAddress(addrHome.create(patient.getAddress()));
+    } catch (CreateException e) {
+      logger.error(e.getMessage());
+      throw e;
+    }
+  }
+
+ /**
+  * <p>Physician create.</p>
+  */
+  public Object ejbCreate(String firstName, String middleName, String lastName,
+                          String phone, String email, Address address)
+    throws NamingException, CreateException
+  {
+    setFirstName(firstName);
+    setMiddleName(middleName);
+    setLastName(lastName);
+    setPhone(phone);
+    setEmail(email);
+
+    return null;
+  }
+
+  public void ejbPostCreate(String firstName,
+                            String middleName,
+                            String lastName,
+                            String phone,
+                            String email,
+                            Address address)
+    throws NamingException, CreateException
+  {
+    try {
+      AddressLocal addressLocal = addrHome.create(address.getStreetName1(),
+                                                  address.getStreetName2(),
+                                                  address.getCity(),
+                                                  address.getState(),
+                                                  address.getZipCode(),
+                                                  address.getCountry());
+      setAddress(addressLocal);
+    } catch (CreateException e) {
+      logger.error(e.getMessage());
+      throw e;
+    }
+  }
+
+      // Utility methods
+ /**
+  * <p>Get Address Entity EJB local home</p>
+  */
+  public AddressLocalHome getAddressLocalHome() throws NamingException {
+    return (AddressLocalHome)lookUpLocalHome(JNDINames.ADDRESS_LOCAL_HOME,
+      com.bea.medrec.entities.AddressLocalHome.class);
+  }
+
+  /**
+  * <p>Get local home</p>
+  */
+  public Object lookUpLocalHome(String pHome, Class pClazz)
+    throws NamingException {
+    ServiceLocator locator = ServiceLocator.getInstance();
+    Object obj = locator.lookupLocalHome(pHome, pClazz);
+    return obj;
+  }
+}

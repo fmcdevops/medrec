@@ -1,0 +1,203 @@
+
+ /* Patient CSS */
+body {margin: 0; FONT-FAMILY: Arial,Helvetica,sans-serif; }
+
+a:link {COLOR: #006666; FONT-FAMILY: Arial,Helvetica,sans-serif; }
+
+a:active {COLOR: #00CED1; FONT-FAMILY: Arial,Helvetica,sans-serif; }
+
+a:hover {COLOR: #009999; BACKGROUND-COLOR: #E9F4F0; FONT-FAMILY: Arial,Helvetica,sans-serif;}
+
+a:visited {COLOR: #999999; FONT-FAMILY: Arial,Helvetica,sans-serif; }
+
+    TD {
+    FONT-SIZE: 100%;
+    FONT-FAMILY: Arial,Helvetica,sans-serif;
+    }
+
+     INPUT, SELECT, OPTION, TEXTAREA {
+    FONT-SIZE: 100%;
+    FONT-FAMILY: Arial,Helvetica,sans-serif;
+    border: 1px solid #8FBEBF;
+     background-color: #E9F4F0;
+    }
+
+    .pagetop {
+    FONT-FAMILY: Arial,sans-serif;
+    COLOR: white;
+        BACKGROUND-COLOR: SteelBlue;
+    FONT-SIZE: 80%;
+    FONT-WEIGHT: bold;
+    TEXT-DECORATION: None;
+  }
+
+  .pagetitle-patient {
+    FONT-WEIGHT: Bold;
+  }
+
+  .pageheaderpatient {
+    font-size: 160%;
+    FONT-FAMILY: Arial,Helvetica,sans-serif;
+    color: #E9F4F0;
+    font-weight: bold;
+    text-align: center;
+    padding-top: 20px;
+  }
+    .pagetop-md {
+    FONT-FAMILY: Arial,sans-serif;
+    COLOR: white;
+      BACKGROUND-COLOR: SteelBlue;
+    FONT-SIZE: 80%;
+    FONT-WEIGHT: bold;
+    TEXT-DECORATION: None;
+  }
+    .pagetop-patient {
+    FONT-FAMILY: Arial,sans-serif;
+    COLOR: white;
+        BACKGROUND-COLOR: CadetBlue;
+    FONT-SIZE: 80%;
+    FONT-WEIGHT: bold;
+    TEXT-DECORATION: None;
+  }
+
+
+  .pagetitle-error {
+    FONT-WEIGHT: Bold;
+  }
+
+
+  .coltitle-patient {
+      BACKGROUND-COLOR: #bcd6d7;
+    FONT-WEIGHT: Bold;
+  }
+
+
+
+  .title, .label {
+    FONT-SIZE: 90%;
+    FONT-WEIGHT: Bold;
+    VERTICAL-ALIGN: sub;
+  }
+
+
+  .row1 {
+      BACKGROUND-COLOR: #D2EBEE;
+  }
+  .row2 {
+      BACKGROUND-COLOR: white;
+  }
+
+  .head1 {
+      FONT-FAMILY: Arial,Helvetica,Geneva,sans-serif;
+    COLOR: black;
+    FONT-SIZE: 120%;
+    FONT-WEIGHT: Bold;
+  }
+
+  .head3 {
+      FONT-FAMILY: Arial,Helvetica,Geneva,sans-serif;
+    COLOR: black;
+    FONT-SIZE: 80%;
+    FONT-WEIGHT: Bold;
+  }
+
+
+.patientname {padding: 6px; background-color: #004E4F;
+color: #FFFFFF; text-align: middle; font-size: 120%;
+border-right: 1px solid #FFFFFF;}
+
+.patientdob {padding: 6px; background-color: #006666;
+color: #FFFFFF; font-size: 120%;  border-right: 1px solid #FFFFFF;}
+
+.patientbanner {background-color:#99CCCC}
+
+.profilebutton {background-color: #FF9900; width: 100px;}
+
+a.profilebutton,  A.profilebutton:LINK, A.profilebutton:VISITED
+{font-family: Arial,sans-serif;
+border-left: 1px solid #FFCC99;
+border-right: 1px solid #993300;
+border-bottom: 1px solid #993300;
+border-top: 1px solid #FFCC99;
+text-align: center;
+display: block;
+background-color: #FF9900;
+color:#000000;
+padding: 2px;
+text-decoration:none;
+width: 100px;}
+
+a.profilebutton:HOVER{font-family: Arial,sans-serif;
+border-left: 1px solid #993300; border-right:
+1px solid #FFCC99; border-bottom: 1px solid #FFCC99;
+border-top: 1px solid #993300; text-align:center;
+display:block;
+background-color: #FAB64F; color:#000000;
+text-decoration:none;
+width: 100px;
+font-weight: bold;
+}
+
+.logoutbutton{background-color: #CCCC00; width: 100px;}
+
+a.logoutbutton,  A.logoutbutton:LINK, A.logoutbutton:VISITED
+ {border-left: 1px solid #FFFF99;
+border-right: 1px solid #336600; border-bottom:
+1px solid #336600; border-top: 1px solid #FFFF99;
+text-align:center;
+background-color: #CCCC00;
+color:#000000;
+display: block;
+text-decoration:none;
+padding: 2px;
+width: 100px;
+}
+
+A.logoutbutton:HOVER
+ {border-left: 1px solid #336600;
+border-right: 1px solid #FFFF99; border-bottom:
+1px solid #FFFF99; border-top: 1px solid #336600;
+text-align:center;
+background-color: #F3F400;
+color:#000000;
+display: block;
+text-decoration:none;
+width: 100px;
+font-weight: bold;
+}
+
+
+.cancelbutton{background-color: #EEEEEE; width: 100px;}
+
+a.cancelbutton,  A.cancelbutton:LINK, A.cancelbutton:VISITED
+ {border-left: 1px solid #CCCCCC;
+border-right: 1px solid #9CA9B8; border-bottom:
+1px solid #9CA9B8; border-top: 1px solid #CCCCCC;
+text-align:center;
+background-color: #EEEEEE;
+color:#000000;
+display: block;
+text-decoration:none;
+padding: 2px;
+width: 100px;
+}
+
+A.cancelbutton:HOVER
+ {border-left: 1px solid #696969;
+border-right: 1px solid #CCCCCC; border-bottom:
+1px solid #CCCCCC; border-top: 1px solid #696969;
+text-align:center;
+background-color: Gray;
+color:#FFFFFF;
+display: block;
+text-decoration:none;
+width: 100px;
+ font-weight: bold;
+}
+
+
+.breadcrumbs {text-align:right;}
+
+.tableborder {border: 1px solid #006666; }
+
+

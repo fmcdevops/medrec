@@ -1,0 +1,7 @@
+<project name="wldeploy_tutorial" default="deploy">
+
+   <target name="deploy">
+      <wldeploy user="weblogic" password="weblogic" adminurl="t3://127.0.0.1:7101" action="deploy" name="tutorial_deployment" source="c:\medrec_tutorial\build\physicianEar" />
+   </target>
+
+</project>

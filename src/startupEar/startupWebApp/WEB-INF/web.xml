@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE web-app
+  PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+  "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+  <servlet>
+    <servlet-name>StartBrowser</servlet-name>
+    <servlet-class>com.bea.medrec.startup.StartBrowser</servlet-class>
+    <init-param>
+      <param-name>debug</param-name>
+      <param-value>false</param-value>
+    </init-param>
+   <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>StartBrowser</servlet-name>
+    <url-pattern>webapp_used_for browser_pop_up_only</url-pattern>
+  </servlet-mapping>
+</web-app>

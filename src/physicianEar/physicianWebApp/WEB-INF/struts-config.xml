@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE struts-config PUBLIC
+  "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN"
+  "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+
+<struts-config>
+
+  <!--   F O R M   B E A N S   -->
+  <form-beans>
+    <form-bean
+        name="patientBean"
+        type="com.bea.medrec.beans.PatientBean"/>
+
+    <form-bean
+        name="prescriptionBean"
+        type="com.bea.medrec.beans.PrescriptionBean"/>
+
+    <form-bean
+        name="recordBean"
+        type="com.bea.medrec.beans.RecordBean"/>
+
+    <form-bean
+        name="searchBean"
+        type="com.bea.medrec.beans.SearchBean"/>
+
+    <form-bean
+        name="userBean"
+        type="com.bea.medrec.beans.UserBean"/>
+
+    <form-bean
+        name="vitalSignsBean"
+        type="com.bea.medrec.beans.VitalSignsBean"/>
+  </form-beans>
+
+  <!--   G L O B A L   F O R W A R D S   -->
+  <global-forwards>
+    <forward name="medrec.startpage" path="start.jsp" redirect="true"/>
+    <forward name="login.home.redirect" path="/login.do" redirect="true"/>
+    <forward name="error" path="/Error.jsp"/>
+    <forward name="home" path="/search.do"/>
+  </global-forwards>
+
+  <!--   A C T I O N   M A P P I N G S   -->
+  <action-mappings>
+    <action
+      path="/rx"
+      input="/CreateRx.jsp"
+      name="prescriptionBean"
+      scope="request"
+      type="com.bea.medrec.actions.CreateRxAction"
+      parameter="actionRx"
+      validate="true">
+      <forward name="save.rx.success" path="/visit.do" redirect="true"/>
+      <forward name="cancel.rx" path="/CreateVisit.jsp"/>
+      <forward name="validate.rx.failure" path="/CreateRx.jsp"/>
+      <forward name="create.rx" path="/CreateRx.jsp"/>
+    </action>
+
+    <action
+      path="/visit"
+      input="/CreateVisit.jsp"
+      name="recordBean"
+      scope="session"
+      type="com.bea.medrec.actions.CreateVisitAction"
+      parameter="action"
+      validate="true">
+      <forward name="create.visit" path="/CreateVisit.jsp"/>
+      <forward name="validate.record.failure" path="/CreateVisit.jsp"/>
+      <forward name="cancel.record.success" path="/medicalrecord.do"/>
+      <forward name="save.record.success" path="/medicalrecord.do"/>
+      <forward name="create.rx" path="/rx.do"/>
+    </action>
+
+    <action
+      path="/error"
+      type="com.bea.medrec.actions.ErrorAction">
+      <forward name="error.page" path="/Error.jsp"/>
+    </action>
+
+    <action
+      path="/login"
+      type="com.bea.medrec.actions.PhysLoginAction"
+      name="userBean"
+      scope="request"
+      input="/Login.jsp"
+      validate="true">
+      <forward name="login.home" path="/Login.jsp"/>
+      <forward name="login.success" path="/search.do" redirect="true"/>
+      <forward name="login.failure" path="/Login.jsp"/>
+    </action>
+
+    <action
+      path="/logout"
+      type="com.bea.medrec.actions.PhysLogoutAction">
+      <forward name="login.home" path="/Login.jsp"/>
+    </action>
+
+    <action
+      path="/searchresults"
+      type="com.bea.medrec.actions.SearchResultsAction"
+      name="searchBean"
+      scope="request"
+      input="/Search.jsp"
+      parameter="action">
+      <forward name="search.home" path="/search.do"/>
+      <forward name="search.invalid" path="/Search.jsp"/>
+      <forward name="search.results" path="/SearchResults.jsp"/>
+      <forward name="view.records.summary" path="/medicalrecord.do" redirect="true"/>
+    </action>
+
+    <action
+      path="/search"
+      type="com.bea.medrec.actions.SearchAction">
+      <forward name="search.home" path="/Search.jsp"/>
+    </action>
+
+    <action
+      path="/profile"
+      type="com.bea.medrec.actions.PhysViewProfileAction">
+      <forward name="view.profile" path="/ViewProfile.jsp"/>
+    </action>
+
+    <action
+      path="/medicalrecord"
+      type="com.bea.medrec.actions.PhysViewRecordsSummaryAction">
+      <forward name="search.results" path="/searchresults.do"/>
+      <forward name="view.records.summary" path="/ViewRecords.jsp"/>
+    </action>
+
+    <action
+      path="/record"
+      type="com.bea.medrec.actions.PhysViewRecordAction">
+      <forward name="view.records.summary" path="/medicalrecord.do"/>
+      <forward name="view.record" path="/ViewRecord.jsp"/>
+    </action>
+  </action-mappings>
+
+  <!--   C O N T R O L L E R   -->
+  <controller>
+    <set-property property="debug" value="2"/>
+    <set-property property="nocache" value="true"/>
+  </controller>
+
+  <!--   M E S S A G E   R E S O U R C E S   -->
+  <message-resources
+    parameter="com.bea.medrec.utils.ApplicationResources"/>
+
+  <!--   P L U G - I N S   -->
+  <plug-in className="org.apache.struts.validator.ValidatorPlugIn">
+    <set-property property="pathnames"
+                     value="/WEB-INF/validator-rules.xml,
+                            /WEB-INF/validation.xml"/>
+  </plug-in>
+
+</struts-config>

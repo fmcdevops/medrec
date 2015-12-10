@@ -1,0 +1,217 @@
+<project name="medrec ear" default="build">
+
+  <property environment="env" />
+
+  <property file="../medrec.properties"/>
+
+  <property name="build.compiler" value="${compiler}" />
+
+  <property name="adminwebapp" value="adminWebApp"/>
+  <property name="mainwebapp" value="mainWebApp"/>
+  <property name="patientwebapp" value="patientWebApp"/>
+  <property name="webservicesejb" value="webServicesEjb"/>
+
+  <!-- this is the src directory out of which when combined
+       with the build directory is a wls formatted ear -->
+  <property name="medrec.ear.src.dir" value="." />
+
+  <!-- this is the build directory for the wls formatted ear -->
+  <property name="dest.dir" value="${medrec.ear.wlcompile.build.dir}" />
+
+  <!-- This is an archived J2EE formatted ear, combining
+       the build and src elements of the medrec ear -->
+  <property name="ear.file" value="${medrec.ear.file}" />
+
+  <!-- This is an exploded J2EE formatted ear, combining
+       the build and src elements of the medrec ear -->
+  <property name="ear.exploded.dir" value="${medrec.ear.exploded.dir}" />
+
+  <!-- these all apply to the src and build directory for wls formatted ear -->
+  <property name="app-inf.dest.classes" value="${dest.dir}/APP-INF/classes"/>
+  <property name="app-inf.dest.lib" value="${dest.dir}/APP-INF/lib"/>
+  <property name="app-inf.src.classes" value="${medrec.ear.src.dir}/APP-INF/classes"/>
+  <property name="app-inf.src.lib" value="${medrec.ear.src.dir}/APP-INF/lib"/>
+
+  <property name="webservice.namespace" value="${webservice.url}"/>
+
+  <property name="webservice.javacomponet" value="com.bea.medrec.webservices.MedRecWebServices"/>
+  <property name="webservice.web-inf" value="${dest.dir}/${ws.war.name}/WEB-INF/"/>
+  <property name="webservice.web-inf.classes" value="${webservice.web-inf}/classes"/>
+
+  <target name="banner">
+    <echo>+---------------------------------------+</echo>
+    <echo>+        Building MedRec Ear            +</echo>
+    <echo>+---------------------------------------+</echo>
+  </target>
+
+  <!-- build and deploy application -->
+  <target name="all" depends="clean, build" />
+  <target name="stage" depends="clean, build, exploded.ear" />
+
+  <target name="prepare">
+    <!--Setup the directories for the ear level -->
+    <mkdir dir="${app-inf.dest.classes}"/>
+    <mkdir dir="${app-inf.dest.lib}"/>
+    <mkdir dir="${app-inf.src.classes}"/>
+    <mkdir dir="${app-inf.src.lib}"/>
+
+    <!-- Copy libs for ear level -->
+    <!-- MedRec jars -->
+    <copy file="${exceptions.classpath}" todir="${app-inf.dest.lib}" />
+    <copy file="${utils.classpath}" todir="${app-inf.dest.lib}" />
+    <copy file="${value.classpath}" todir="${app-inf.dest.lib}" />
+    <copy file="${common.web.classpath}" todir="${app-inf.dest.lib}" />
+    <!-- 3rd-party jars -->
+    <copy file="${log.classpath}" todir="${app-inf.dest.lib}" />
+    <copy todir="${app-inf.dest.lib}">
+      <fileset dir="${struts.lib.dir}/" includes="commons-*.jar"/>
+    </copy>
+    <copy file="${struts.classpath}" todir="${app-inf.dest.lib}" />
+  </target>
+
+  <!-- builds entire application -->
+  <target name="build" depends="build.split.dir, build.ws, appc.splitdir"/>
+
+  <!-- build split-dir components -->
+  <target name="build.split.dir" depends="banner,prepare">
+    <!-- Build worker components first -->
+    <wlcompile srcdir="${medrec.ear.src.dir}" destdir="${dest.dir}"
+               excludes="adminWebApp, xml, mdbEjbs, webServicesEjb"/>
+    <!-- Build dependent components -->
+    <wlcompile srcdir="${medrec.ear.src.dir}" destdir="${dest.dir}"
+               includes="xml, webServicesEjb"
+               classpath="${java.class.path};${dest.dir}/sessionEjbs"/>
+    <!-- Build more dependent components -->
+    <wlcompile srcdir="${medrec.ear.src.dir}" destdir="${dest.dir}"
+               includes="mdbEjbs, adminWebApp"/>
+  </target>
+
+  <!-- build data access objects -->
+  <target name="build.dao" description="build dao component">
+    <wlcompile srcdir="${medrec.ear.src.dir}" destdir="${dest.dir}" includes="dao" />
+  </target>
+
+  <!-- build mail mdbean -->
+  <target name="build.mail.ejb" description="build mail mdbean">
+    <wlcompile srcdir="${medrec.ear.src.dir}" destdir="${dest.dir}" includes="mailEjb" />
+  </target>
+
+  <!-- build entity ejbs -->
+  <target name="build.entity.ejbs" description="build entity ejbs">
+    <wlcompile srcdir="${medrec.ear.src.dir}" destdir="${dest.dir}" includes="entityEjbs" />
+  </target>
+
+  <!-- build session ejbs
+       classpath is required due to entity ejbs ejbgen nature -->
+  <target name="build.session.ejbs" description="build session ejbs">
+    <wlcompile srcdir="${medrec.ear.src.dir}" destdir="${dest.dir}" includes="sessionEjbs" />
+  </target>
+
+  <!-- build registration mdbean
+       classpath is required due to session ejbs ejbgen nature -->
+  <target name="build.registration.ejb" description="build registration mdbean">
+    <wlcompile srcdir="${medrec.ear.src.dir}" destdir="${dest.dir}" includes="registrationEjb" />
+  </target>
+
+  <!-- build xml processing and parser
+       classpath is required due to session ejbs ejbgen nature -->
+  <target name="build.medrec.xml" description="build xml processing and parser">
+    <wlcompile srcdir="${medrec.ear.src.dir}" destdir="${dest.dir}"
+               classpath="${java.class.path};${dest.dir}/sessionEjbs"
+               includes="xml" />
+  </target>
+
+  <!-- build web service
+       classpath is required due to session ejbs ejbgen nature -->
+  <target name="build.web.service" description="build web service">
+    <wlcompile srcdir="${medrec.ear.src.dir}" destdir="${dest.dir}" includes="webServicesEjb" />
+  </target>
+
+  <!-- build main webapp -->
+  <target name="build.main.webapp" description="build main webapp">
+    <wlcompile srcdir="${medrec.ear.src.dir}" destdir="${dest.dir}"
+               includes="mainWebApp" />
+  </target>
+
+  <!-- build admin webapp
+       classpath is required due to session ejbs ejbgen nature -->
+  <target name="build.admin.webapp" description="build admin webapp" depends="prepare">
+    <wlcompile srcdir="${medrec.ear.src.dir}" destdir="${dest.dir}" includes="adminWebApp" />
+  </target>
+
+  <!-- build patient webapp
+       classpath is required due to session ejbs ejbgen nature -->
+  <target name="build.patient.webapp" description="build patient webapp" depends="prepare">
+    <wlcompile srcdir="${medrec.ear.src.dir}" destdir="${dest.dir}" includes="patientWebApp" />
+  </target>
+
+  <target name="build.ws">
+    <mkdir dir="${dist.dir}"/>
+    <autotype
+      javaComponents="${webservice.javacomponet}"
+      targetNamespace="http://www.bea.com/medrec"
+      packageName="${webservice.package.name}"
+      earClasspath="${dest.dir}"
+      keepGenerated="false"
+      destDir="${webservice.web-inf.classes}"
+      />
+    <source2wsdd
+      javaSource="webServicesEjb/com/bea/medrec/webservices/MedRecWebServices.java"
+      ejbLink="webServicesEjb#MedRecWebServicesEJB"
+      typesInfo="${webservice.web-inf.classes}/types.xml"
+      ddFile="${webservice.web-inf}/web-services.xml"
+      serviceURI="/MedRecWebServices"
+      earClasspath="${dest.dir}"
+      classpath="${java.class.path};${webservice.web-inf.classes}"
+      wsdlFile="${dist.dir}/MedRecService.wsdl"/>
+  </target>
+
+  <target name="appc.splitdir">
+    <wlappc source="${dest.dir}"/>
+  </target>
+
+  <!-- deploys entire application -->
+  <target name="deploy.medrec.ear" description="Deploy build/medrecEar to WebLogic on localhost:${port} .">
+    <!-- "url" is not required, but the default url is iiop://localhost:${port} -->
+    <wldeploy user="${wls.username}" password="${wls.password}" adminurl="t3://localhost:${port}"
+      action="deploy" name="${medrec.ear.display.name}" source="${dest.dir}" />
+  </target>
+
+  <target name="redeploy.medrec.ear" description="Redeploy build/medrecEar to WebLogic on localhost:${port}.">
+    <!-- "url" is not required, but the default url is iiop://localhost:${port} -->
+    <wldeploy user="${wls.username}" password="${wls.password}" adminurl="t3://localhost:${port}"
+      action="redeploy" name="${medrec.ear.display.name}" source="${dest.dir}"/>
+  </target>
+
+  <!-- package the application as J2EE formatted archived .ear -->
+  <target name="ear">
+    <wlpackage srcdir="${medrec.ear.src.dir}" destdir="${dest.dir}"
+      toFile="${ear.file}" />
+  </target>
+
+  <!-- package the application a J2EE formatted exploded ear -->
+  <target name="exploded.ear">
+    <wlpackage srcdir="${medrec.ear.src.dir}" destdir="${dest.dir}"
+      toDir="${ear.exploded.dir}" />
+  </target>
+
+  <target name="clean" depends="clean.ear,clean.exploded.ear,clean.prepare">
+    <delete dir="${dest.dir}" />
+  </target>
+
+  <target name="clean.ear">
+    <delete file="${ear.file}"/>
+  </target>
+
+  <target name="clean.exploded.ear">
+    <delete dir="${ear.exploded.dir}"/>
+  </target>
+
+  <target name="clean.prepare">
+    <delete dir="${app-inf.dest.classes}"/>
+    <delete dir="${app-inf.dest.lib}"/>
+    <delete dir="${app-inf.src.classes}"/>
+    <delete file="${medrec.ear.src.dir}/sessionEjbs_client.jar"/>
+  </target>
+
+</project>

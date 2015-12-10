@@ -1,0 +1,73 @@
+<project name="medrec" default="build" basedir=".">
+
+  <!-- set global properties for this build -->
+  <property environment="env"/>
+  <property file="./medrec.properties"/>
+  <property name="root" value="."/>
+
+  <property name="build.compiler" value="${compiler}"/>
+
+  <target name="init" description="">
+  <echo message="####   S T A R T   M E D R E C   ####"/>
+    <tstamp/>
+    <echo message="Started on ${TODAY} at ${TSTAMP}"/>
+  </target>
+
+  <!-- Clean all build related dirs and jars -->
+  <target name="clean" description="Deletes ${build.dir}/** and ${dist.dir}/**.">
+    <delete includeEmptyDirs="true" failonerror="false">
+      <fileset dir="${build.dir}" includes="**/*"/>
+      <fileset dir="${dist.dir}" includes="**/*"/>
+    </delete>
+  </target>
+
+  <!-- Development -->
+  <target name="build" depends="init" description="Builds all MedRec components.">
+    <ant inheritAll="false" dir="${root}/startupEar" antfile="build.xml"/>
+    <ant inheritAll="false" dir="${root}/security"/>
+    <ant inheritAll="false" dir="${root}/common"/>
+    <ant inheritAll="false" dir="${root}/medrecEar"/>
+    <ant inheritAll="false" dir="${root}/physicianEar"/>
+    <ant inheritAll="false" dir="${root}/clients"/>
+    <echo message="####   E N D   M E D R E C   ####"/>
+  </target>
+
+  <!-- Development -->
+  <target name="deploy.dev" depends="init,clean"
+    description="Builds and stages all MedRec components to split-dir deployment.">
+    <ant inheritAll="false" dir="${root}/startupEar" 
+       antfile="build.xml" target="stage"/>
+    <ant inheritAll="false" dir="${root}/security"/>
+    <ant inheritAll="false" dir="${root}/common" target="stage"/>
+    <ant inheritAll="false" dir="${root}/medrecEar" target="stage"/>
+    <ant inheritAll="false" dir="${root}/physicianEar" target="stage"/>
+    <ant inheritAll="false" dir="${root}/clients"/>
+    <echo message="####   E N D   M E D R E C   ####"/>
+  </target>
+
+  <!--  #####  G E N E R A T E   M E D R E C   D O C S  ####  -->
+  <!-- Build the medrec javadocs -->
+  <target name="generate.medrec.javadocs" description="Generate MedRec javadocs.">
+    <javadoc
+      packagenames="com.bea.medrec.*"
+      destdir="${build.dir}/medrecEar/mainWebApp/javadoc"
+      classpath="${wl.home}/server/weblogic.jar;${java.class.path};${log.classpath};${struts.classpath};${build.dir}/physicianEar/APP-INF/lib/webServicesEjb_client.jar;${medrec.auth.provider.jar}"
+      sourcepath="${src.dir}/common/exceptions;${src.dir}/common/value;${src.dir}/common/utils;${src.dir}/common/web;${src.dir}/clients;${src.dir}/medrecEar/adminWebApp/WEB-INF/src;${src.dir}/medrecEar/dao;${build.dir}/medrecEar/entityEjbs;${src.dir}/medrecEar/mainWebApp/WEB-INF/src;${src.dir}/medrecEar/patientWebApp/WEB-INF/src;${build.dir}/medrecEar/mdbEjbs;${build.dir}/medrecEar/sessionEjbs;${src.dir}/medrecEar/webServicesEjb;${src.dir}/medrecEar/xml;${src.dir}/physicianEar/physicianWebApp/WEB-INF/src;${build.dir}/physicianEar/physSessionEjbs;${src.dir}/security;${src.dir}/startupEar/startupWebApp/WEB-INF/src/"
+      author="true"
+      version="true"
+      access="public"
+      use="true"
+      nodeprecatedlist="true"
+      nohelp="true"
+      noindex="true"
+      windowtitle="WebLogic Server 8.1 MedRec"
+      additionalparam="-breakiterator"
+      failonerror="false">
+      <doctitle><![CDATA[<h1>MedRec API Documentation</h1>]]></doctitle>
+      <header>&lt;/td&gt;&lt;td valign=bottom align=right&gt;&lt;b&gt;WebLogic Server 8.1&lt;/b&gt;, BEA Systems, Inc.&lt;/td&gt;</header>
+      <footer>&lt;/td&gt;&lt;td valign=bottom align=right&gt;Documentation is available at&lt;br&gt; &lt;a href=http://e-docs.bea.com/wls/docs81&gt;http://e-docs.bea.com/wls/docs81&lt;/a&gt;&lt;/td&gt;</footer>
+      <bottom>&lt;a href=http://e-docs.bea.com/wls/docs81/copyright.html&gt;Copyright&lt;/a&gt; &amp;copy; 2004 BEA Systems, Inc. All Rights Reserved.</bottom>
+    </javadoc>
+  </target>
+
+</project>

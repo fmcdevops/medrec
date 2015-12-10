@@ -1,0 +1,31 @@
+<project name="WebServicesTutorial" default="build.ws">
+
+  <target name="build.ws">
+
+    <autotype
+      javaComponents="com.bea.medrec.webservices.MedRecWebServices"
+      targetNamespace="http://localhost:7101/ws_medrec/MedRecWebServices"
+      packageName="com.bea.medrec.webservices"
+      earClasspath="c:/medrec_tutorial/build/medrecEar"
+      keepGenerated="false"
+      destDir="c:/medrec_tutorial/build/medrecEar/ws_medrec/WEB-INF/classes" 
+    />
+
+    <source2wsdd
+      javaSource="webServicesEjb/com/bea/medrec/webservices/MedRecWebServices.java"
+      ejbLink="webServicesEjb#MedRecWebServicesEJB"
+      typesInfo="c:/medrec_tutorial/build/medrecEar/ws_medrec/WEB-INF/classes/types.xml"
+      ddFile="c:/medrec_tutorial/build/medrecEar/ws_medrec/WEB-INF/web-services.xml"
+      serviceURI="/MedRecWebServices"
+      earClasspath="c:/medrec_tutorial/build/medrecEar"
+      classpath="${java.class.path};c:/medrec_tutorial/build/medrecEar/ws_medrec/WEB-INF/classes"
+      wsdlFile="c:/medrec_tutorial/dist/MedRecService.wsdl"
+    />
+
+  </target>
+
+  <target name="deploy">
+     <wldeploy user="weblogic" password="weblogic" adminurl="t3://127.0.0.1:7101" action="deploy" name="medrec_deployment" source="c:/medrec_tutorial/build/medrecEar" />
+  </target>
+
+</project>

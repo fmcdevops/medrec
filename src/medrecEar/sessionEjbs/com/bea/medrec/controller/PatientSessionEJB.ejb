@@ -1,0 +1,437 @@
+package com.bea.medrec.controller;
+
+import com.bea.medrec.entities.AddressLocal;
+import com.bea.medrec.entities.PatientLocal;
+import com.bea.medrec.entities.PatientLocalHome;
+import com.bea.medrec.exceptions.DuplicateAccountException;
+import com.bea.medrec.utils.MedRecConstants;
+import com.bea.medrec.utils.MedRecUtils;
+import com.bea.medrec.value.*;
+import java.rmi.RemoteException;
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import javax.ejb.EJBException;
+import javax.ejb.FinderException;
+import javax.ejb.SessionContext;
+import javax.naming.NamingException;
+import org.apache.log4j.Logger;
+
+/**
+ * <p>Session facade for all MedRec patient functionality.</p>
+ *
+ * @author Copyright (c) 2004 by BEA Systems. All Rights Reserved.
+ *
+ * EJBGen tags:
+ * @ejbgen:session
+ *   max-beans-in-free-pool = 1000
+ *   initial-beans-in-free-pool = 0
+ *   trans-timeout-seconds = 0
+ *   type = Stateless
+ *   default-transaction = Required
+ *   enable-call-by-reference = True
+ *   ejb-name = PatientSessionEJB
+ *
+ * @ejbgen:jndi-name
+ *   remote = PatientSessionEJB.PatientSessionHome
+ *
+ * @ejbgen:ejb-local-ref
+ *   name = ejb/local/address
+ *   home = com.bea.medrec.entities.AddressLocalHome
+ *   local = com.bea.medrec.entities.AddressLocal
+ *   type = Entity
+ *   link = AddressEJB
+ *
+ * @ejbgen:ejb-local-ref
+ *   name = ejb/local/group
+ *   home = com.bea.medrec.entities.GroupLocalHome
+ *   local = com.bea.medrec.entities.GroupLocal
+ *   type = Entity
+ *   link = GroupEJB
+ *
+ * @ejbgen:ejb-local-ref
+ *   name = ejb/local/patient
+ *   home = com.bea.medrec.entities.PatientLocalHome
+ *   local = com.bea.medrec.entities.PatientLocal
+ *   type = Entity
+ *   link = PatientEJB
+ *
+ * @ejbgen:ejb-local-ref
+ *   name = ejb/local/user
+ *   home = com.bea.medrec.entities.UserLocalHome
+ *   local = com.bea.medrec.entities.UserLocal
+ *   type = Entity
+ *   link = UserEJB
+ *
+ * @ejbgen:resource-ref
+ *   name = jms/MedRecQueueConnectionFactory
+ *   type = javax.jms.QueueConnectionFactory
+ *   auth = Container
+ *   sharing-scope = Shareable
+ *   jndi-name = weblogic.jms.MessageDrivenBeanConnectionFactory
+ *
+ * @ejbgen:file-generation
+ *   remote-class = True
+ *   remote-home = True
+ */
+public class PatientSessionEJB extends weblogic.ejb.GenericSessionBean
+{
+  private static Logger logger =
+    Logger.getLogger(PatientSessionEJB.class.getName());
+
+  // Member variables
+  private SessionContext ctx;
+  private AdminSession adminSession;
+  private PatientLocalHome patientHome;
+
+ /**
+  * <p>Sets the session context.  Get handles for all
+  * session and entity and JMS connections used throughout
+  * this session bean.</p>
+  *
+  * @param ctx  SessionContext Context for session
+  */
+  public void setSessionContext(SessionContext ctx)
+  {
+    this.ctx = ctx;
+    try {
+      // Session bean homes.
+      adminSession = JNDILookupUtils.getAdminSession();
+      // Entity bean homes.
+      patientHome = JNDILookupUtils.getPatientLocalHome();
+    } catch(NamingException ne) {
+      throw new EJBException(ne);
+    }
+  }
+
+
+    //   P U B L I C   M E T H O D S
+
+      //  F I N D   P A T I E N T   B Y   E M A I L
+  /**
+  * <p>
+  * Finds MedRec patient by social security number.
+  * </p>
+  *
+  * @param pEmail   Patient email
+  *
+  * @return Patient  Patient value object.
+  *
+  * @exception NamingException
+  * @exception RemoteException
+  * @exception Exception
+  *
+  * EJBGen tags:
+  * @ejbgen:remote-method
+  */
+  public Patient findPatientByEmail(String pEmail)
+    throws NamingException, RemoteException, Exception
+  {
+    logger.debug("Email: "+pEmail);
+
+    // Declare local variables.
+    PatientLocal patientLocal = null;
+    Patient patient = null;
+
+    try {
+      patientLocal = patientHome.findByEmail(pEmail);
+      patient = patientLocal.getPatient();
+      logger.debug(patient.toString());
+    }
+    catch(FinderException fe) {
+      logger.warn(fe.getClass().getName()+" - "+fe.getMessage());
+    }
+    return patient;
+  }
+
+      //  F I N D   P A T I E N T   B Y   I D
+  /**
+  * <p>Find Patient by id.</p>
+  *
+  * @param pId   Patient Id
+  *
+  * @return Patient  Patient value object.
+  *
+  * @exception NamingException
+  * @exception RemoteException
+  * @exception Exception
+  *
+  * EJBGen tags:
+  * @ejbgen:remote-method
+  */
+  public Patient findPatientById(Integer pId)
+    throws NamingException, RemoteException, Exception
+  {
+    // Declare local variables.
+    PatientLocal patientLocal = null;
+    Patient patient = null;
+
+    try {
+      patientLocal = patientHome.findByPrimaryKey(pId);
+      patient = patientLocal.getPatient();
+    }
+    catch(FinderException fe) {
+      logger.warn(fe.getClass().getName()+" - "+fe.getMessage());
+    }
+
+    return patient;
+  }
+
+      //  F I N D   P A T I E N T   B Y   L A S T N A M E   W I L D
+ /**
+  * <p>
+  * Find patient by last name.  Wild card search- %lastName%.
+  * </p>
+  *
+  * @param lastName   Last name substring
+  *
+  * @return Collection  Patient value objects.
+  *
+  * @exception NamingException
+  * @exception RemoteException
+  * @exception Exception
+  *
+  * EJBGen tags:
+  * @ejbgen:remote-method
+  */
+  public Collection findPatientByLastNameWild(String lastName)
+    throws NamingException, RemoteException, Exception
+  {
+    logger.info("Finding patient by wildcard last name.");
+    logger.debug("Last name: "+lastName);
+
+    // Declare local variables.
+    Collection patientLocalCol = null;
+    Collection patientCol = null;
+
+    try {
+      patientLocalCol = patientHome.findByLastNameWild("%"+lastName+"%");
+      patientCol = toPatientCollection(patientLocalCol);
+    }
+    catch(FinderException fe) {
+      logger.warn(fe.getClass().getName()+" - "+fe.getMessage());
+    }
+    return patientCol;
+  }
+
+      //  F I N D   P A T I E N T   B Y   S S N
+ /**
+  * <p>
+  * Finds MedRec patient by social security number.
+  * </p>
+  *
+  * @param ssn   Patient SSN
+  *
+  * @return Collection  Collection of patient value objects.
+  *
+  * @exception NamingException
+  * @exception RemoteException
+  * @exception Exception
+  *
+  * EJBGen tags:
+  * @ejbgen:remote-method
+  */
+  public Patient findPatientBySsn(String ssn)
+    throws NamingException, RemoteException, Exception
+  {
+    logger.debug("SSN: "+ssn);
+
+    // Declare local variables.
+    PatientLocal patientLocal = null;
+    Patient patient = null;
+
+    try {
+      patientLocal = patientHome.findBySsn(ssn);
+      patient = patientLocal.getPatient();
+      logger.debug(patient.toString());
+    }
+    catch(FinderException fe) {
+      logger.warn(fe.getClass().getName()+" - "+fe.getMessage());
+    }
+    return patient;
+  }
+
+      //  P R O C E S S   A C T I V E   R E G I S T R A T I O N
+ /**
+  * <p>Registers new patient account assigning status to ACTIVE.
+  * This registration process is used to bypass administration
+  * workflow which approves/denys new patient accounts.
+  *
+  * Typically this functionality is used by "affiliated" organizations
+  * who register new patients thru MedRec's web services features.  These
+  * organizations are trusted; therefore, no adminstration approval is needed.</p>
+  *
+  * @param pPatient    Patient value objects.
+  *
+  * @exception NamingException
+  * @exception RemoteException
+  * @exception Exception
+  *
+  * EJBGen tags:
+  * @ejbgen:remote-method
+  */
+  public void processActiveRegistration(Patient pPatient, String pPassword)
+    throws NamingException, RemoteException, Exception
+  {
+    // Declare local variables.
+    Registration reg = null;
+    User user = null;
+
+    reg = new Registration();
+    reg.setPatient(pPatient);
+    user = new User();
+    user.setUsername(pPatient.getEmail());
+    user.setPassword(pPassword);
+    user.setStatus(MedRecConstants.USER_ACTIVE);
+    reg.setUser(user);
+    // Call process registration worker.
+    processRegistration(reg);
+  }
+
+      //    P R O C E S S   N E W   R E G I S T R A T I O N
+ /**
+  * <p>Registers new patient account assign status to NEW.
+  * Typically this functionality is used by online registrants that must
+  * go through a MedRec adminstration approval process.</p>
+  *
+  * @param pReg    Patient value objects.
+  *
+  * EJBGen tags:
+  * @ejbgen:remote-method
+  */
+  public void processNewRegistration(Registration pReg)
+  {
+    try {
+      // Assign account status to NEW.
+      pReg.getUser().setStatus(MedRecConstants.USER_NEW);
+      processRegistration(pReg);
+    }
+    catch (DuplicateAccountException dupe) {
+      logger.error("Unable to register the following user: \n"
+        +pReg.toString()+" due to "+dupe.getMessage());
+      // Send mail to notifying user of existing registration.
+    }
+    catch (Throwable th) {
+      logger.error("Unable to register the following user: \n"
+        +pReg.toString()+" due to "+th.getMessage());
+      // Send registration to MedRec admintration for manual processing.
+    }
+  }
+
+      //   P R O C E S S   R E G I S T R A T I O N
+ /**
+  * <p>Main patient registration process method.  This method creates a
+  * login account, assigns patient designated groups, and stores
+  * pertinent patient data such as name, dob, ssn, etc.
+  * This method acts as the worker to different types of registration.</p>
+  *
+  * @param registration    Registration value objects.
+  *
+  * @exception NamingException
+  * @exception RemoteException
+  * @exception Exception
+  *
+  * EJBGen tags:
+  * @ejbgen:remote-method
+  */
+  public void processRegistration(Registration registration)
+    throws Exception
+  {
+    logger.debug("Registering Patient: "
+      +registration.getPatient().toStringLite());
+
+    // Declare local variables.
+    User user = null;
+    Patient patient = null;
+
+    // Get user and patient objects.
+    user = registration.getUser();
+    patient = registration.getPatient();
+
+    // Create user, groups and patient information.
+    adminSession.createPatientAccount(user, patient);
+    logger.debug("Registration successful.");
+  }
+
+      //  U P D A T E   P A T I E N T
+ /**
+  * <p>
+  * Updates a patient by calling the appropriate entity beans.
+  * </p>
+  *
+  * @param pPatient    Patient value objects.
+  *
+  * @exception NamingException
+  * @exception RemoteException
+  * @exception Exception
+  *
+  * EJBGen tags:
+  * @ejbgen:remote-method
+  */
+  public void updatePatient(Patient pPatient)
+    throws NamingException, RemoteException, Exception
+  {
+    logger.debug("Updating Patient: "+pPatient.toString());
+
+    // Declare local variables.
+    PatientLocal selectedPatient = null;
+    AddressLocal selectedAddress = null;
+    Address address = null;
+
+    try {
+      selectedPatient = patientHome.findByPrimaryKey(pPatient.getId());
+
+      // Patient info
+      selectedPatient.setFirstName(pPatient.getFirstName());
+      selectedPatient.setMiddleName(pPatient.getMiddleName());
+      selectedPatient.setLastName(pPatient.getLastName());
+      Date date = MedRecUtils.getDate(pPatient.getDateOfBirth());
+      selectedPatient.setDateOfBirth(date);
+      selectedPatient.setGender(pPatient.getGender());
+      selectedPatient.setSsn(pPatient.getSsn());
+      selectedPatient.setPhone(pPatient.getPhone());
+
+      // Address info
+      selectedAddress = selectedPatient.getAddress();
+      address = pPatient.getAddress();
+      selectedAddress.setStreetName1(address.getStreetName1());
+      selectedAddress.setStreetName2(address.getStreetName2());
+      selectedAddress.setCity(address.getCity());
+      selectedAddress.setState(address.getState());
+      selectedAddress.setZipCode(address.getZipCode());
+      selectedAddress.setCountry(address.getCountry());
+    } catch (Exception e) {
+      logger.error(e);
+      throw new EJBException(e);
+    }
+  }
+
+      //   P R I V A T E   M E T H O D S
+
+ /**
+  * <p>
+  * Converts an entity bean collection to a collection
+  * of prescription value objects.
+  * </p>
+  */
+  private Collection toPatientCollection(Collection patients)
+    throws Exception
+  {
+    // Declare local variables.
+    ArrayList array = null;
+    Iterator itr = null;
+    PatientLocal patientLocal = null;
+
+    array = new ArrayList();
+    if (patients != null) {
+      logger.debug("Num patients found: "+patients.size());
+      itr = patients.iterator();
+      while (itr.hasNext()) {
+        patientLocal = (PatientLocal)itr.next();
+        array.add(patientLocal.getPatient());
+      }
+    }
+    return array;
+  }
+}

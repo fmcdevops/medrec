@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE struts-config PUBLIC
+          "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN"
+          "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+
+<struts-config>
+
+  <!--   F O R M   B E A N S   -->
+  <form-beans>
+  </form-beans>
+
+  <!--   G L O B A L   F O R W A R D S   -->
+  <global-forwards>
+    <forward name="medrec.startpage" path="start.jsp" redirect="true"/>
+  </global-forwards>
+
+  <!--   A C T I O N   M A P P I N G S   -->
+  <action-mappings>
+    <action
+      path="/changelocale"
+      type="com.bea.medrec.actions.ChangeLocaleAction">
+    </action>
+  </action-mappings>
+
+  <!--   C O N T R O L L E R   -->
+  <controller>
+    <set-property property="debug" value="2"/>
+    <set-property property="nocache" value="true"/>
+  </controller>
+
+  <!--   M E S S A G E   R E S O U R C E S   -->
+  <message-resources
+    parameter="com.bea.medrec.utils.ApplicationResources"/>
+
+</struts-config>

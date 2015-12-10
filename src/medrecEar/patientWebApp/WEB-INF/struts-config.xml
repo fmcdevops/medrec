@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE struts-config PUBLIC
+  "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN"
+  "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+
+<struts-config>
+
+  <!--   F O R M   B E A N S   -->
+  <form-beans>
+    <form-bean
+        name="userBean"
+        type="com.bea.medrec.beans.UserBean"/>
+
+    <form-bean
+        name="patientBean"
+        type="com.bea.medrec.beans.PatientBean"/>
+
+    <form-bean
+        name="addressBean"
+        type="com.bea.medrec.beans.AddressBean"/>
+
+    <form-bean
+        name="registrationBean"
+        type="com.bea.medrec.beans.RegistrationBean"/>
+  </form-beans>
+
+  <!--   G L O B A L   F O R W A R D S   -->
+  <global-forwards>
+    <forward name="medrec.startpage" path="start.jsp" redirect="true"/>
+    <forward name="error" path="/Error.jsp"/>
+    <forward name="home" path="/medicalrecord.do" redirect="true"/>
+    <forward name="login.home.redirect" path="/login.do" redirect="true"/>
+  </global-forwards>
+
+  <!--   A C T I O N   M A P P I N G S   -->
+  <action-mappings>
+    <action
+      path="/editprofile"
+      type="com.bea.medrec.actions.EditProfileAction"
+      name="patientBean"
+      scope="request"
+      input="/EditProfile.jsp"
+      parameter="action"
+      validate="true">
+      <forward name="validate.profile.failure" path="/EditProfile.jsp"/>
+      <forward name="edit.profile.success" path="/SavedProfile.jsp"/>
+      <forward name="edit.profile" path="/EditProfile.jsp"/>
+      <forward name="view.profile" path="/viewprofile.do"/>
+    </action>
+
+    <action
+      path="/error"
+      type="com.bea.medrec.actions.ErrorAction">
+      <forward name="error" path="/Error.jsp"/>
+    </action>
+
+    <action
+      path="/login"
+      type="com.bea.medrec.actions.LoginAction"
+      name="userBean"
+      scope="request"
+      input="/Login.jsp"
+      validate="true">
+      <forward name="login.home" path="/Login.jsp"/>
+      <forward name="login.success" path="/medicalrecord.do" redirect="true"/>
+      <forward name="login.failure" path="/Login.jsp"/>
+    </action>
+
+    <action
+      path="/logout"
+      type="com.bea.medrec.actions.LogoutAction">
+      <forward name="login.home" path="/login.do"/>
+    </action>
+
+    <action
+      path="/register"
+      type="com.bea.medrec.actions.RegisterAction"
+      name="registrationBean"
+      scope="request"
+      input="/Register.jsp"
+      parameter="action"
+      validate="true">
+      <forward name="register.home" path="/Register.jsp"/>
+      <forward name="validate.registration.failure" path="/Register.jsp"/>
+      <forward name="register.success" path="/RegistrationSuccessful.jsp"/>
+    </action>
+
+    <action
+      path="/viewprofile"
+      type="com.bea.medrec.actions.ViewProfileAction">
+      <forward name="view.profile" path="/ViewProfile.jsp"/>
+    </action>
+
+    <action
+      path="/medicalrecord"
+      type="com.bea.medrec.actions.ViewRecordsSummaryAction">
+      <forward name="view.records.summary" path="/ViewRecords.jsp"/>
+    </action>
+
+    <action
+      path="/record"
+      type="com.bea.medrec.actions.ViewRecordAction">
+      <forward name="view.records.summary" path="/medicalrecord.do"/>
+      <forward name="view.record" path="/ViewRecord.jsp"/>
+    </action>
+  </action-mappings>
+
+    <!--   C O N T R O L L E R   -->
+  <controller>
+    <set-property property="debug" value="2"/>
+    <set-property property="nocache" value="true"/>
+  </controller>
+
+  <!--   M E S S A G E   R E S O U R C E S   -->
+  <message-resources
+    parameter="com.bea.medrec.utils.ApplicationResources"/>
+
+  <!--   P L U G - I N S   -->
+  <plug-in className="org.apache.struts.validator.ValidatorPlugIn">
+    <set-property property="pathnames"
+                     value="/WEB-INF/validator-rules.xml,
+                            /WEB-INF/validation.xml"/>
+  </plug-in>
+
+</struts-config>
